@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BTools: tools gratis untuk kreator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="Favicon.png">
+<script>(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();</script>
+<style>
+:root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503;--sb:#3c4756;--glow:rgba(244,196,48,.16);--grid:rgba(255,255,255,.035)}
+html[data-theme=light]{color-scheme:light;--bg:#f6f3ec;--pn:#ffffff;--ln:#ddd6c6;--ink:#1d232c;--mu:#5f6a77;--sb:#c4bcaa;--glow:rgba(244,196,48,.30);--grid:rgba(0,0,0,.045)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 'Instrument Sans',system-ui,sans-serif}
+body{overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb);border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--ac);border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:active{background:#d9ab22;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin;scrollbar-color:var(--sb) transparent}}
+
+/* navbar */
+.top{position:sticky;top:0;z-index:20;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--ln);background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.logo{display:flex;align-items:center;gap:0;font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;text-decoration:none}
+.logo .y{color:var(--ac);display:inline-block;transition:transform .25s}
+.logo:hover .y{transform:rotate(-8deg) scale(1.12)}
+.nav{display:flex;align-items:center;gap:6px}
+.nav a.l{color:var(--mu);text-decoration:none;font-weight:600;font-size:13px;padding:7px 12px;border-radius:6px;transition:color .15s,background .15s}
+.nav a.l:hover{color:var(--ink);background:var(--pn)}
+.setw{position:relative}
+.ib{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid var(--ln);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;transition:border-color .15s,color .15s}
+.ib:hover,.ib[aria-expanded=true]{border-color:var(--ac);color:var(--ac)}
+.ib svg{width:18px;height:18px}
+.pop{position:absolute;right:0;top:calc(100% + 10px);width:260px;padding:16px;background:var(--pn);border:1px solid var(--ln);border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.28);display:grid;gap:14px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .15s,transform .15s}
+.pop.on{opacity:1;transform:none;pointer-events:auto}
+.pop h3{margin:0;font:600 13px 'Instrument Sans',sans-serif}
+.pop .lb{color:var(--mu);font-size:12px;margin-bottom:6px;display:block}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;border:1px solid var(--ln);border-radius:9px;background:var(--bg)}
+.seg button{font:600 12px 'Instrument Sans',sans-serif;border:0;border-radius:6px;padding:7px 8px;background:transparent;color:var(--mu);cursor:pointer;transition:background .15s,color .15s}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--ac);color:var(--ai)}
+
+/* hero */
+.hero{position:relative;isolation:isolate;overflow:hidden;text-align:center;padding:92px 20px 70px;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:44px 44px;background-position:center top}
+.hero::before{content:"";position:absolute;z-index:-1;left:50%;top:-140px;width:760px;height:520px;transform:translateX(-50%);background:radial-gradient(closest-side,var(--glow),transparent);animation:breathe 7s ease-in-out infinite}
+.hero::after{content:"";position:absolute;z-index:-1;inset:auto 0 0 0;height:120px;background:linear-gradient(transparent,var(--bg))}
+@keyframes breathe{50%{transform:translateX(-50%) scale(1.12);opacity:.75}}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--ln);border-radius:99px;background:var(--pn);font-size:12px;font-weight:600;color:var(--mu)}
+.badge i{width:7px;height:7px;border-radius:50%;background:#4cd37b;box-shadow:0 0 0 0 rgba(76,211,123,.6);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 8px rgba(76,211,123,0)}100%{box-shadow:0 0 0 0 rgba(76,211,123,0)}}
+.hero h1{font:800 clamp(38px,7vw,76px)/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em;margin:22px auto 18px;max-width:18ch}
+.hero h1 em{font-style:normal;color:var(--ac);position:relative;white-space:nowrap}
+.hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:-.04em;height:.09em;border-radius:99px;background:var(--ac);transform:scaleX(0);transform-origin:left;animation:ul 1s .5s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ul{to{transform:scaleX(1)}}
+.hero p.sub{color:var(--mu);font-size:clamp(15px,2vw,18px);max-width:58ch;margin:0 auto 30px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px 'Instrument Sans',sans-serif;text-decoration:none;border:1px solid #435063;background:#252d38;color:#e8e6df;padding:12px 20px;border-radius:8px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.btn:hover{border-color:var(--ac);transform:translateY(-2px)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.btn.pri:hover{box-shadow:0 8px 24px var(--glow)}
+html[data-theme=light] .btn:not(.pri){background:#ece7da;border-color:#cfc7b4;color:var(--ink)}
+.btn svg{width:16px;height:16px;transition:transform .2s}
+.btn:hover svg{transform:translate(2px,0)}
+.eq{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:56px;margin:46px auto 0}
+.eq i{width:6px;border-radius:3px;background:var(--ln);height:100%;transform-origin:bottom;animation:eq 1.2s ease-in-out infinite}
+.eq i:nth-child(3n){background:var(--ac)}
+@keyframes eq{0%,100%{transform:scaleY(.18)}50%{transform:scaleY(1)}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);max-width:900px;margin:0 auto;padding:0 20px;gap:12px}
+.stat{padding:16px;border:1px solid var(--ln);border-radius:12px;background:var(--pn);text-align:center}
+.stat b{display:block;font:800 28px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--ac)}
+.stat span{color:var(--mu);font-size:12px}
+
+/* sections */
+section.s{max-width:1100px;margin:0 auto;padding:84px 20px 0}
+.eyebrow{color:var(--ac);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.s h2{font:800 clamp(28px,4.5vw,44px)/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin:8px 0 10px}
+.s .lead{color:var(--mu);max-width:56ch;margin:0 0 34px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{position:relative;display:flex;flex-direction:column;gap:12px;padding:22px;border:1px solid var(--ln);border-radius:16px;background:var(--pn);text-decoration:none;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),var(--glow),transparent 70%);opacity:0;transition:opacity .25s;pointer-events:none}
+.card:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 14px 34px rgba(0,0,0,.18)}
+.card:hover::before{opacity:1}
+.ico{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:var(--bg);border:1px solid var(--ln);color:var(--ac);transition:transform .25s,background .25s,color .25s}
+.card:hover .ico{transform:rotate(-6deg) scale(1.08);background:var(--ac);color:var(--ai)}
+.ico svg{width:26px;height:26px}
+.card h3{margin:0;font:800 21px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.card p{margin:0;color:var(--mu);font-size:14px;flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--ln);color:var(--mu)}
+.go{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--ac)}
+.go svg{width:16px;height:16px;transition:transform .2s}
+.card:hover .go svg{transform:translateX(5px)}
+.feat{padding:22px;border-left:2px solid var(--ac);background:linear-gradient(90deg,var(--glow),transparent 60%)}
+.feat h3{margin:0 0 6px;font:800 19px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.feat p{margin:0;color:var(--mu);font-size:14px}
+footer{margin-top:90px;padding:26px 20px;border-top:1px solid var(--ln);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--mu);font-size:12px}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+.rv.in{opacity:1;transform:none}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.nav a.l{display:none}.hero{padding-top:64px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.hero h1 em::after{transform:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="#top" aria-label="BTools"><span class="y">B</span>Tools</a>
+  <nav class="nav">
+    <a class="l" href="#tools" data-i18n="nav_tools">Tools</a>
+    <a class="l" href="#why" data-i18n="nav_why">Kenapa BTools</a>
+    <div class="setw">
+      <button class="ib" id="setBtn" aria-expanded="false" aria-controls="setPop" aria-label="Pengaturan" data-i18n-attr="aria-label:settings;title:settings" title="Pengaturan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+      <div class="pop" id="setPop" role="dialog" aria-label="Pengaturan" data-i18n-attr="aria-label:settings">
+        <h3 data-i18n="settings">Pengaturan</h3>
+        <div><span class="lb" data-i18n="lang">Bahasa</span>
+          <div class="seg" id="segLang"><button data-v="id" aria-pressed="true">Indonesia</button><button data-v="en" aria-pressed="false">English</button></div></div>
+        <div><span class="lb" data-i18n="theme">Tema</span>
+          <div class="seg" id="segTheme"><button data-v="dark" aria-pressed="true" data-i18n="dark">Gelap</button><button data-v="light" aria-pressed="false" data-i18n="light">Terang</button></div></div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero">
+  <span class="badge"><i></i><span data-i18n="badge">100% gratis · tanpa daftar · tanpa instal</span></span>
+  <h1><span data-i18n="h1a">Tools kreator,</span> <em data-i18n="h1b">gratis</em><span data-i18n="h1c"> dan langsung di browser.</span></h1>
+  <p class="sub" data-i18n="sub">BTools adalah kumpulan tools gratis untuk bikin subtitle, teks animasi, memperbesar gambar, dan membersihkan suara. Semua jalan di perangkatmu, jadi file kamu tetap privat.</p>
+  <div class="cta">
+    <a class="btn pri" href="#tools"><span data-i18n="cta1">Lihat semua tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn" href="#why" data-i18n="cta2">Kenapa BTools?</a>
+  </div>
+  <div class="eq" aria-hidden="true" id="eq"></div>
+</section>
+
+<div class="stats rv">
+  <div class="stat"><b>4</b><span data-i18n="st1">tools siap pakai</span></div>
+  <div class="stat"><b>Rp0</b><span data-i18n="st2">gratis selamanya</span></div>
+  <div class="stat"><b>0</b><span data-i18n="st3">akun yang dibutuhkan</span></div>
+  <div class="stat"><b>100%</b><span data-i18n="st4">diproses di browser</span></div>
+</div>
+
+<section class="s" id="tools">
+  <div class="eyebrow" data-i18n="eb1">Tools</div>
+  <h2 data-i18n="t_h">Pilih tools yang kamu butuhkan</h2>
+  <p class="lead" data-i18n="t_p">Klik salah satu kartu untuk langsung membuka tools-nya. Bahasa dan tema yang kamu pilih di pengaturan ikut ke semua tools.</p>
+  <div class="grid" id="cards">
+    <a class="card rv" href="Subtitle_Maker.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="M6.5 12h4M13.5 12h4M6.5 15.5h7"/></svg></div>
+      <h3>Subtitle Maker</h3><p data-i18n="d1">Bikin subtitle otomatis dari suara videomu, atur gaya dan animasinya, lalu ekspor video atau file .srt.</p>
+      <div class="tags"><span>AI Whisper</span><span>.srt</span><span>MP4 / WebM</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card rv" href="Animated_Text.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V5h16v2M12 5v14M9 19h6"/><path d="M19 11l.8 1.7L21.5 13.5l-1.7.8L19 16l-.8-1.7-1.7-.8 1.7-.8z"/></svg></div>
+      <h3>Animated Text</h3><p data-i18n="d2">Ubah teks jadi animasi keren: highlight, kutipan, efek kamera, lalu ekspor ke MP4 atau WebM transparan.</p>
+      <div class="tags"><span>Highlight</span><span>Kamera</span><span>MP4 / WebM</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card rv" href="Image_Upscaler.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="14" height="14" rx="2.5"/><path d="M3 15l4-4 4 4 2-2 4 4M21 3v6M18 6h6" transform="translate(-1 0)"/></svg></div>
+      <h3>Image Up-Scaler</h3><p data-i18n="d3">Perbesar gambar ke 2K, 4K, atau 8K dengan AI, lalu geser garis untuk membandingkan sebelum dan sesudah.</p>
+      <div class="tags"><span>Real-ESRGAN</span><span>2K · 4K · 8K</span><span>PNG / JPG / WebP</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card rv" href="Noice_Canceller.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h3l2-6 3 12 3-16 3 12 2-2h4"/></svg></div>
+      <h3>Noice Canceller</h3><p data-i18n="d4">Hapus dengung, desis, dan bising latar dari audio atau video memakai AI, lalu bandingkan hasilnya.</p>
+      <div class="tags"><span>RNNoise</span><span>.wav</span><span data-i18n="tagv">Video bersih</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+</section>
+
+<section class="s" id="why">
+  <div class="eyebrow" data-i18n="eb2">Kenapa BTools</div>
+  <h2 data-i18n="w_h">Sederhana, privat, dan gratis</h2>
+  <p class="lead" data-i18n="w_p">Tidak ada langganan, tidak ada watermark, tidak ada akun. Buka, pakai, selesai.</p>
+  <div class="grid">
+    <div class="feat rv"><h3 data-i18n="f1h">Gratis tanpa syarat</h3><p data-i18n="f1p">Semua tools bisa dipakai tanpa biaya dan tanpa batas harian dari kami.</p></div>
+    <div class="feat rv"><h3 data-i18n="f2h">File tetap di perangkatmu</h3><p data-i18n="f2p">Video, gambar, dan audio diproses di browser. Hanya mode online opsional yang mengirim data ke layanan pihak ketiga.</p></div>
+    <div class="feat rv"><h3 data-i18n="f3h">Tanpa instal, tanpa daftar</h3><p data-i18n="f3p">Cukup buka halamannya di Chrome, Edge, atau Firefox terbaru dan langsung mulai.</p></div>
+  </div>
+</section>
+</main>
+
+<footer><span>© <span id="yr"></span> BTools</span><span data-i18n="foot">Dibuat untuk kreator. Gratis dipakai siapa saja.</span></footer>
+
+<script>
+(function(){
+var T={
+id:{nav_tools:'Tools',nav_why:'Kenapa BTools',settings:'Pengaturan',lang:'Bahasa',theme:'Tema',dark:'Gelap',light:'Terang',
+badge:'100% gratis · tanpa daftar · tanpa instal',h1a:'Tools kreator,',h1b:'gratis',h1c:' dan langsung di browser.',
+sub:'BTools adalah kumpulan tools gratis untuk bikin subtitle, teks animasi, memperbesar gambar, dan membersihkan suara. Semua jalan di perangkatmu, jadi file kamu tetap privat.',
+cta1:'Lihat semua tools',cta2:'Kenapa BTools?',st1:'tools siap pakai',st2:'gratis selamanya',st3:'akun yang dibutuhkan',st4:'diproses di browser',
+eb1:'Tools',t_h:'Pilih tools yang kamu butuhkan',t_p:'Klik salah satu kartu untuk langsung membuka tools-nya. Bahasa dan tema yang kamu pilih di pengaturan ikut ke semua tools.',
+d1:'Bikin subtitle otomatis dari suara videomu, atur gaya dan animasinya, lalu ekspor video atau file .srt.',
+d2:'Ubah teks jadi animasi keren: highlight, kutipan, efek kamera, lalu ekspor ke MP4 atau WebM transparan.',
+d3:'Perbesar gambar ke 2K, 4K, atau 8K dengan AI, lalu geser garis untuk membandingkan sebelum dan sesudah.',
+d4:'Hapus dengung, desis, dan bising latar dari audio atau video memakai AI, lalu bandingkan hasilnya.',
+tagv:'Video bersih',open:'Buka tools',eb2:'Kenapa BTools',w_h:'Sederhana, privat, dan gratis',w_p:'Tidak ada langganan, tidak ada watermark, tidak ada akun. Buka, pakai, selesai.',
+f1h:'Gratis tanpa syarat',f1p:'Semua tools bisa dipakai tanpa biaya dan tanpa batas harian dari kami.',
+f2h:'File tetap di perangkatmu',f2p:'Video, gambar, dan audio diproses di browser. Hanya mode online opsional yang mengirim data ke layanan pihak ketiga.',
+f3h:'Tanpa instal, tanpa daftar',f3p:'Cukup buka halamannya di Chrome, Edge, atau Firefox terbaru dan langsung mulai.',
+foot:'Dibuat untuk kreator. Gratis dipakai siapa saja.',title:'BTools: tools gratis untuk kreator'},
+en:{nav_tools:'Tools',nav_why:'Why BTools',settings:'Settings',lang:'Language',theme:'Theme',dark:'Dark',light:'Light',
+badge:'100% free · no sign-up · no install',h1a:'Creator tools,',h1b:'free',h1c:' and right in your browser.',
+sub:'BTools is a collection of free tools for making subtitles, animated text, upscaling images, and cleaning up audio. Everything runs on your device, so your files stay private.',
+cta1:'See all tools',cta2:'Why BTools?',st1:'tools ready to use',st2:'free forever',st3:'accounts needed',st4:'processed in your browser',
+eb1:'Tools',t_h:'Pick the tool you need',t_p:'Click a card to open the tool right away. The language and theme you choose in settings carry over to every tool.',
+d1:"Automatically create subtitles from your video's audio, style and animate them, then export the video or an .srt file.",
+d2:'Turn text into slick animations: highlights, quotes, camera effects, then export to MP4 or transparent WebM.',
+d3:'Upscale images to 2K, 4K, or 8K with AI, then drag the line to compare before and after.',
+d4:'Remove hum, hiss, and background noise from audio or video using AI, then compare the result.',
+tagv:'Clean video',open:'Open tool',eb2:'Why BTools',w_h:'Simple, private, and free',w_p:'No subscriptions, no watermarks, no accounts. Open it, use it, done.',
+f1h:'Free, no strings attached',f1p:'Every tool is free to use, with no daily limits from us.',
+f2h:'Files stay on your device',f2p:'Videos, images, and audio are processed in your browser. Only the optional online modes send data to a third-party service.',
+f3h:'No install, no sign-up',f3p:'Just open the page in the latest Chrome, Edge, or Firefox and get started.',
+foot:'Made for creators. Free for everyone.',title:'BTools: free tools for creators'}};
+var B=window.BT,$=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return[].slice.call((r||document).querySelectorAll(s))};
+function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function apply(){
+ var d=document.documentElement,L=T[B.lang];d.lang=B.lang;d.setAttribute('data-theme',B.theme);document.title=L.title;
+ $$('[data-i18n]').forEach(function(e){var v=L[e.getAttribute('data-i18n')];if(v!=null)e.textContent=v});
+ $$('[data-i18n-attr]').forEach(function(e){e.getAttribute('data-i18n-attr').split(';').forEach(function(p){var a=p.split(':');if(L[a[1]])e.setAttribute(a[0],L[a[1]])})});
+ $$('#segLang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===B.lang)});
+ $$('#segTheme button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===B.theme)});
+ $$('a[data-tool]').forEach(function(a){a.href=a.getAttribute('href').split('?')[0]+'?lang='+B.lang+'&theme='+B.theme});
+}
+$('#segLang').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;B.lang=b.dataset.v;save('bt_lang',B.lang);apply()});
+$('#segTheme').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;B.theme=b.dataset.v;save('bt_theme',B.theme);apply()});
+var sb=$('#setBtn'),sp=$('#setPop');
+function tog(o){sp.classList.toggle('on',o);sb.setAttribute('aria-expanded',o)}
+sb.addEventListener('click',function(e){e.stopPropagation();tog(!sp.classList.contains('on'))});
+document.addEventListener('click',function(e){if(!sp.contains(e.target))tog(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')tog(false)});
+window.addEventListener('storage',function(e){if(e.key==='bt_lang'){B.lang=e.newValue==='en'?'en':'id';apply()}if(e.key==='bt_theme'){B.theme=e.newValue==='light'?'light':'dark';apply()}});
+// equalizer bars
+var eq=$('#eq');for(var i=0;i<32;i++){var b=document.createElement('i');b.style.animationDelay=(-Math.random()*1.2).toFixed(2)+'s';b.style.animationDuration=(0.8+Math.random()*0.9).toFixed(2)+'s';eq.appendChild(b)}
+// glow follows pointer on cards
+$$('.card').forEach(function(c){c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+// reveal on scroll
+var rv=$$('.rv');
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}})},{threshold:.12});rv.forEach(function(el,i){el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)})}else rv.forEach(function(el){el.classList.add('in')});
+$('#yr').textContent=new Date().getFullYear();
+apply();
+})();
+</script>
+</body>
+</html>

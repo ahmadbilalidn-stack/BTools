@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Converter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="Favicon.png">
+<style>
+:root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503;--in:#12161c;--tr:#12161c}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.45 'Instrument Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.top{height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px;border-bottom:1px solid var(--ln)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.home{display:inline-grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--ln);border-radius:8px;color:var(--ink);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+.home:hover{border-color:var(--ac);color:var(--ac)}
+.home svg{width:18px;height:18px}
+.logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.tag{color:var(--mu);font-size:12px;text-align:right}
+.drop{min-height:calc(100vh - 54px);display:grid;place-items:center;align-content:center;gap:28px;padding:24px}
+.dz{display:block;width:min(720px,100%);padding:72px 32px;border:2px dashed #3c4756;border-radius:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dz.over,.dz:hover{border-color:var(--ac);background:#1a2028}
+.dz h1{font:800 clamp(30px,5.5vw,52px)/1.02 'Bricolage Grotesque',sans-serif;margin:0 0 14px;letter-spacing:-.03em;text-shadow:0 0 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000}
+.dz p{color:var(--mu);margin:0 auto 28px;max-width:46ch}
+.dz small{display:block;margin-top:16px;color:var(--mu);font-size:12px}
+.btn{display:inline-block;font:600 13px 'Instrument Sans',sans-serif;border:1px solid #435063;background:#252d38;color:var(--ink);padding:9px 14px;border-radius:6px;cursor:pointer;text-decoration:none;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--ac)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.btn.lg{padding:12px 18px;font-size:14px}
+.btn.sm{padding:6px 10px;font-size:12px}
+.wide{width:100%}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.work{min-height:calc(100vh - 54px);display:grid;place-items:center;align-content:center;padding:24px}
+.card{width:min(640px,100%);background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:18px}
+.file{display:flex;align-items:center;gap:12px}
+.ficon{width:44px;height:44px;flex:none;border-radius:10px;background:var(--ac);color:var(--ai);display:grid;place-items:center}
+.ficon svg{width:22px;height:22px}
+.finfo{flex:1;min-width:0}
+.fname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fmeta{color:var(--mu);font-size:12px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu)}
+select{background:var(--in);color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:9px 8px;font:inherit}
+.pbar{height:8px;background:var(--tr);border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--ac);transition:width .15s}
+.pct{display:flex;justify-content:space-between;gap:10px;color:var(--mu);font-size:12px}
+.pct b{color:var(--ink);font-weight:600}
+.done{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.done i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--ac);color:var(--ai);display:grid;place-items:center;font-size:13px}
+audio{width:100%;height:40px}
+.hint{color:var(--mu);font-size:12px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.acts .btn{flex:1}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);max-width:min(92vw,520px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){.row2{grid-template-columns:1fr}.tag{display:none}.dz{padding:48px 20px}}
+html[data-theme=light]{color-scheme:light;--bg:#f6f3ec;--pn:#ffffff;--ln:#ddd6c6;--ink:#1d232c;--mu:#5f6a77;--in:#faf8f3;--tr:#e2dccd}
+html[data-theme=light] .btn:not(.pri){background:#ece7da;border-color:#cfc7b4}
+html[data-theme=light] .dz{border-color:#bfb7a3}
+html[data-theme=light] .dz.over,html[data-theme=light] .dz:hover{background:#efeadd}
+html[data-theme=light] .dz h1{text-shadow:none}
+html[data-theme=light] #toast{color:#f6f3ec}
+</style>
+<script>(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();</script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <a class="home" id="home" href="index.html" data-i18n-attr="title:home,aria-label:home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h4.5v-5.5h4v5.5h4.5V10"/></svg></a>
+    <div class="logo">Converter</div>
+  </div>
+  <span class="tag" data-i18n="tag"></span>
+</header>
+
+<main>
+  <!-- LANGKAH 1: pilih file -->
+  <section id="s1" class="drop">
+    <label class="dz" id="dz" for="f" tabindex="0">
+      <h1 data-i18n="h1"></h1>
+      <p data-i18n="dzp"></p>
+      <span class="btn pri lg" data-i18n="choose"></span>
+      <small data-i18n="formats"></small>
+    </label>
+    <input type="file" id="f" accept="video/*,audio/*,.mp4,.m4v,.mov,.webm,.mkv,.3gp" hidden>
+  </section>
+
+  <!-- LANGKAH 2: opsi, proses, hasil -->
+  <section id="s2" class="work" hidden>
+    <div class="card">
+      <div class="file">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+        <div class="finfo"><div class="fname" id="fname"></div><div class="fmeta" id="fmeta"></div></div>
+        <button class="btn sm" id="chg" type="button" data-i18n="change"></button>
+      </div>
+
+      <div id="opts" class="stack">
+        <div class="row2">
+          <label><span data-i18n="quality"></span>
+            <select id="kbps">
+              <option value="128" data-i18n="q128"></option>
+              <option value="192" data-i18n="q192" selected></option>
+              <option value="256" data-i18n="q256"></option>
+              <option value="320" data-i18n="q320"></option>
+            </select>
+          </label>
+          <label><span data-i18n="channels"></span>
+            <select id="chn">
+              <option value="stereo" data-i18n="stereo" selected></option>
+              <option value="mono" data-i18n="mono"></option>
+            </select>
+          </label>
+        </div>
+        <button class="btn pri lg wide" id="go" type="button" data-i18n="convert"></button>
+      </div>
+
+      <div id="prog" class="stack" hidden>
+        <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="pb"><i id="pbi"></i></div>
+        <div class="pct"><span id="stx"></span><b id="pct">0%</b></div>
+        <div class="hint" data-i18n="bgHint"></div>
+        <button class="btn wide" id="cancel" type="button" data-i18n="cancel"></button>
+      </div>
+
+      <div id="res" class="stack" hidden>
+        <div class="done"><i>&#10003;</i><span data-i18n="ready"></span></div>
+        <audio id="player" controls preload="metadata"></audio>
+        <div class="fmeta" id="rmeta"></div>
+        <div class="acts">
+          <a class="btn pri lg" id="dl" href="#" download data-i18n="download"></a>
+          <button class="btn lg" id="again" type="button" data-i18n="another"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var B=window.BT||{lang:'id',theme:'dark'};
+var $=function(id){return document.getElementById(id)};
+
+/* ---------- teks dua bahasa ---------- */
+var I={
+id:{
+ title:'Converter',
+ home:'Beranda',
+ tag:'Filemu tetap di perangkatmu. Tidak ada yang dikirim ke server',
+ h1:'Ubah MP4 jadi MP3',
+ dzp:'Taruh videomu di sini, lalu ambil audionya sebagai file MP3. Semua diproses langsung di browser.',
+ choose:'Pilih file',
+ formats:'MP4, MOV, WebM, M4V, atau file audio lain. Maks. 500 MB. Bisa juga diseret ke mana saja di halaman ini.',
+ change:'Ganti file',
+ quality:'Kualitas MP3',
+ q128:'128 kbps (hemat)',q192:'192 kbps (seimbang)',q256:'256 kbps (tinggi)',q320:'320 kbps (terbaik)',
+ channels:'Saluran suara',stereo:'Stereo',mono:'Mono (file lebih kecil)',
+ convert:'Ubah ke MP3',
+ cancel:'Batalkan',
+ ready:'MP3 siap diunduh',
+ download:'Unduh MP3',
+ another:'Ubah file lain',
+ sRead:'Membaca file',
+ sDecode:'Membaca audio dari video',
+ sEncode:'Mengubah ke MP3',
+ sLib:'Menyiapkan pengubah MP3',
+ resMeta:'{from} jadi {to} · {kbps} kbps · {ch}',
+ errType:'File itu bukan video atau audio. Pilih file MP4, MOV, atau WebM.',
+ errBig:'File terlalu besar. Batasnya 500 MB.',
+ errDecode:'Audio tidak terbaca. Pastikan videonya punya suara dan formatnya didukung browser.',
+ errLib:'Pengubah MP3 gagal dimuat. Pastikan internet aktif, lalu coba lagi.',
+ errMem:'Memori browser tidak cukup untuk file ini. Coba file yang lebih pendek.',
+ errGen:'Gagal mengubah file. Coba lagi.',
+ cancelled:'Dibatalkan.',
+ bgHint:'Kamu boleh pindah tab atau minimize, tapi jangan tutup tab ini sampai selesai.',
+ notifDone:'MP3 siap diunduh'
+},
+en:{
+ title:'Converter',
+ home:'Home',
+ tag:'Your file stays on your device. Nothing is sent to a server',
+ h1:'Turn MP4 into MP3',
+ dzp:'Drop your video here and get its audio as an MP3 file. Everything is processed right in your browser.',
+ choose:'Choose file',
+ formats:'MP4, MOV, WebM, M4V, or other audio files. Max 500 MB. You can also drag it anywhere on this page.',
+ change:'Change file',
+ quality:'MP3 quality',
+ q128:'128 kbps (small)',q192:'192 kbps (balanced)',q256:'256 kbps (high)',q320:'320 kbps (best)',
+ channels:'Audio channels',stereo:'Stereo',mono:'Mono (smaller file)',
+ convert:'Convert to MP3',
+ cancel:'Cancel',
+ ready:'Your MP3 is ready',
+ download:'Download MP3',
+ another:'Convert another file',
+ sRead:'Reading file',
+ sDecode:'Reading audio from video',
+ sEncode:'Converting to MP3',
+ sLib:'Preparing MP3 encoder',
+ resMeta:'{from} to {to} · {kbps} kbps · {ch}',
+ errType:'That file is not a video or audio file. Choose an MP4, MOV, or WebM file.',
+ errBig:'The file is too large. The limit is 500 MB.',
+ errDecode:'The audio could not be read. Make sure the video has sound and a browser-supported format.',
+ errLib:'The MP3 encoder failed to load. Make sure you are online, then try again.',
+ errMem:'The browser ran out of memory for this file. Try a shorter one.',
+ errGen:'Conversion failed. Please try again.',
+ cancelled:'Cancelled.',
+ bgHint:'You can switch tabs or minimize the window, but do not close this tab until it is done.',
+ notifDone:'Your MP3 is ready'
+}};
+function t(k,p){
+  var s=(I[B.lang]&&I[B.lang][k]);if(s===undefined)s=I.id[k];if(s===undefined)s=k;
+  if(p)for(var a in p)s=s.split('{'+a+'}').join(p[a]);
+  return s;
+}
+
+/* ---------- state ---------- */
+var MAX=500*1024*1024;
+var EXT=/\.(mp4|m4v|mov|webm|mkv|3gp|avi|mp3|m4a|aac|wav|ogg|oga|flac|opus)$/i;
+var RATES=[8000,11025,12000,16000,22050,24000,32000,44100,48000];
+var cur=null,busy=false,cancel=false,resUrl=null,metaUrl=null;
+var status={k:'sRead'},lastRes=null;
+
+/* ---------- util ---------- */
+function fmtSize(b){var u=['B','KB','MB','GB'],i=0;while(b>=1024&&i<3){b/=1024;i++}return (i?b.toFixed(1):b)+' '+u[i]}
+function fmtDur(s){if(!isFinite(s)||s<=0)return '';s=Math.round(s);var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60,p=function(n){return n<10?'0'+n:''+n};return h?h+':'+p(m)+':'+p(x):m+':'+p(x)}
+function baseName(){var n=cur?cur.name.replace(/\.[^.]+$/,''):'';return n||'audio'}
+function ext(n){var m=/\.([^.]+)$/.exec(n||'');return m?m[1].toUpperCase():'FILE'}
+var tt;
+function toast(k){var e=$('toast');e.textContent=t(k);e.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('on')},4200)}
+function show(step){
+  $('s1').hidden=step!==1;$('s2').hidden=step===1;
+  $('opts').hidden=step!==2;$('prog').hidden=step!==3;$('res').hidden=step!==4;
+  $('chg').hidden=step===3;
+}
+function setProgress(p){
+  p=Math.max(0,Math.min(1,p));var n=Math.round(p*100);
+  $('pbi').style.width=n+'%';$('pct').textContent=n+'%';$('pb').setAttribute('aria-valuenow',n);
+  if(busy)document.title='Converting ('+n+'%)';
+}
+function setStatus(k){status={k:k};$('stx').textContent=t(k)+'…'}
+
+/* ---------- bahasa & tema ---------- */
+function applyLang(){
+  var d=document.documentElement;d.lang=B.lang;d.setAttribute('data-theme',B.theme);
+  document.title=t('title');
+  document.querySelectorAll('[data-i18n]').forEach(function(e){e.textContent=t(e.getAttribute('data-i18n'))});
+  document.querySelectorAll('[data-i18n-attr]').forEach(function(e){
+    e.getAttribute('data-i18n-attr').split(',').forEach(function(pr){var a=pr.split(':');e.setAttribute(a[0],t(a[1]))});
+  });
+  $('home').href='index.html?lang='+B.lang+'&theme='+B.theme;
+  if(busy)$('stx').textContent=t(status.k)+'…';
+  if(lastRes)renderResMeta();
+}
+window.addEventListener('storage',function(e){
+  if(e.key==='bt_lang'){B.lang=e.newValue==='en'?'en':'id';applyLang()}
+  else if(e.key==='bt_theme'){B.theme=e.newValue==='light'?'light':'dark';applyLang()}
+});
+
+/* ---------- pustaka MP3 (lamejs) ---------- */
+var libP=null;
+function loadScript(src){
+  return new Promise(function(res,rej){
+    var s=document.createElement('script');s.src=src;s.async=true;
+    s.onload=function(){res()};s.onerror=function(){s.remove();rej(new Error('load'))};
+    document.head.appendChild(s);
+  });
+}
+function loadLame(){
+  if(window.lamejs&&window.lamejs.Mp3Encoder)return Promise.resolve();
+  if(libP)return libP;
+  libP=loadScript('https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js')
+    .catch(function(){return loadScript('https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js')})
+    .then(function(){if(!(window.lamejs&&window.lamejs.Mp3Encoder))throw new Error('lib')})
+    .catch(function(e){libP=null;throw new Error('lib')});
+  return libP;
+}
+
+/* ---------- pilih file ---------- */
+function pick(file){
+  if(!file||busy)return;
+  var ok=/^(video|audio)\//.test(file.type)||EXT.test(file.name);
+  if(!ok)return toast('errType');
+  if(file.size>MAX)return toast('errBig');
+  cur=file;
+  clearResult();
+  $('fname').textContent=file.name;
+  $('fname').title=file.name;
+  $('fmeta').textContent=ext(file.name)+' · '+fmtSize(file.size);
+  show(2);
+  // durasi (opsional)
+  try{
+    if(metaUrl)URL.revokeObjectURL(metaUrl);
+    var v=document.createElement('video');v.preload='metadata';v.muted=true;
+    metaUrl=URL.createObjectURL(file);
+    var mine=file,u=metaUrl;
+    v.onloadedmetadata=function(){
+      if(cur===mine){var d=fmtDur(v.duration);if(d)$('fmeta').textContent=ext(file.name)+' · '+fmtSize(file.size)+' · '+d}
+      URL.revokeObjectURL(u);if(metaUrl===u)metaUrl=null;
+    };
+    v.onerror=function(){URL.revokeObjectURL(u);if(metaUrl===u)metaUrl=null};
+    v.src=u;
+  }catch(e){}
+}
+function clearResult(){
+  if(resUrl){URL.revokeObjectURL(resUrl);resUrl=null}
+  var p=$('player');p.pause();p.removeAttribute('src');p.load();
+  $('dl').removeAttribute('href');lastRes=null;
+}
+function reset(){
+  if(busy)return;
+  clearResult();cur=null;$('f').value='';setProgress(0);show(1);
+}
+
+/* ---------- decode & resample ---------- */
+function mkCtx(){
+  var C=window.AudioContext||window.webkitAudioContext;
+  if(!C)throw new Error('decode');
+  try{return new C({sampleRate:44100})}catch(e){return new C()}
+}
+function decode(ab){
+  var ac=mkCtx();
+  return new Promise(function(res,rej){
+    var p=ac.decodeAudioData(ab,res,rej);
+    if(p&&p.catch)p.catch(rej);
+  }).then(function(b){try{var c=ac.close();if(c&&c.catch)c.catch(function(){})}catch(e){}return b},
+          function(e){try{var c=ac.close();if(c&&c.catch)c.catch(function(){})}catch(x){}throw e});
+}
+function resample(buf,rate){
+  var O=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  var oc=new O(buf.numberOfChannels,Math.max(1,Math.ceil(buf.duration*rate)),rate);
+  var s=oc.createBufferSource();s.buffer=buf;s.connect(oc.destination);s.start(0);
+  return new Promise(function(res,rej){
+    var p=oc.startRendering();
+    if(p&&p.then)p.then(res,rej);else oc.oncomplete=function(e){res(e.renderedBuffer)};
+  });
+}
+function f2i(x){x=x<-1?-1:x>1?1:x;return x<0?x*32768:x*32767}
+var tick=function(){return new Promise(function(r){setTimeout(r,0)})};
+
+/* ---------- tetap jalan di background ---------- */
+var lk=null,wl=null,job={abort:null};
+function getWake(){
+  try{
+    if(navigator.wakeLock&&!wl&&busy){
+      navigator.wakeLock.request('screen').then(function(s){
+        if(!busy){s.release();return}
+        wl=s;s.addEventListener('release',function(){wl=null});
+      }).catch(function(){});
+    }
+  }catch(e){}
+}
+function keepAlive(on){
+  if(on){
+    if(!lk&&navigator.locks){
+      var h={r:null,off:false};lk=h;
+      navigator.locks.request('nada-job',function(){return new Promise(function(res){if(h.off)res();else h.r=res})}).catch(function(){});
+    }
+    getWake();
+  }else{
+    if(lk){lk.off=true;if(lk.r)lk.r();lk=null}
+    if(wl){try{wl.release()}catch(e){}wl=null}
+  }
+}
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&busy)getWake()});
+function askNotif(){try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission()}catch(e){}}
+function notifyDone(name){try{if(document.hidden&&window.Notification&&Notification.permission==='granted')new Notification(t('notifDone'),{body:name})}catch(e){}}
+
+/* ---------- encoder di Web Worker (tidak ikut diperlambat saat tab di background) ---------- */
+var LIBS=['https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js','https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js'];
+function workerMain(){
+  var enc=null,mono=false,parts=[],BS=1152;
+  var l16=new Int16Array(BS),r16=new Int16Array(BS);
+  function f2i(x){x=x<-1?-1:x>1?1:x;return x<0?x*32768:x*32767}
+  self.onmessage=function(e){
+    var m=e.data;
+    try{
+      if(m.t==='init'){
+        var ok=false;
+        for(var k=0;k<m.urls.length&&!ok;k++){
+          try{importScripts(m.urls[k]);ok=!!(self.lamejs&&self.lamejs.Mp3Encoder)}catch(x){}
+        }
+        if(!ok){self.postMessage({t:'err',e:'lib'});return}
+        mono=m.mono;enc=new self.lamejs.Mp3Encoder(m.ch,m.rate,m.kbps);
+        self.postMessage({t:'ready'});
+      }else if(m.t==='chunk'){
+        var L=m.l,R=m.r||m.l,N=L.length,i=0;
+        while(i<N){
+          var n=Math.min(BS,N-i),j;
+          if(mono){for(j=0;j<n;j++)l16[j]=f2i((L[i+j]+R[i+j])/2)}
+          else{for(j=0;j<n;j++){l16[j]=f2i(L[i+j]);r16[j]=f2i(R[i+j])}}
+          var a=n<BS?l16.subarray(0,n):l16,b=n<BS?r16.subarray(0,n):r16;
+          var out=mono?enc.encodeBuffer(a):enc.encodeBuffer(a,b);
+          if(out&&out.length)parts.push(out.slice());
+          i+=n;
+        }
+        self.postMessage({t:'ack',pos:m.pos});
+      }else if(m.t==='end'){
+        var f=enc.flush();if(f&&f.length)parts.push(f.slice());
+        self.postMessage({t:'done',blob:new Blob(parts,{type:'audio/mpeg'})});
+      }
+    }catch(x){self.postMessage({t:'err',e:'enc'})}
+  };
+}
+function encodeInWorker(L,R,N,rate,outCh,mono,kbps){
+  return new Promise(function(res,rej){
+    var w,u,fin2=false,CH=1152*400,pos=0,sent=false;
+    try{
+      u=URL.createObjectURL(new Blob(['('+workerMain.toString()+')()'],{type:'text/javascript'}));
+      w=new Worker(u);
+    }catch(e){rej(new Error('noworker'));return}
+    function fin(){if(fin2)return;fin2=true;job.abort=null;try{w.terminate()}catch(e){}try{URL.revokeObjectURL(u)}catch(e){}}
+    job.abort=function(){fin();rej('cancel')};
+    w.onerror=function(){fin();rej(new Error('noworker'))};
+    w.onmessage=function(ev){
+      var m=ev.data;
+      if(fin2)return;
+      if(m.t==='ready'){setStatus('sEncode');next()}
+      else if(m.t==='ack'){setProgress(m.pos/N);next()}
+      else if(m.t==='done'){fin();res(m.blob)}
+      else if(m.t==='err'){fin();rej(new Error(m.e==='lib'?'noworker':'noworker'))}
+    };
+    function next(){
+      if(cancel){fin();rej('cancel');return}
+      if(pos>=N){if(!sent){sent=true;w.postMessage({t:'end'})}return}
+      var n=Math.min(CH,N-pos),l=L.slice(pos,pos+n),r=(R!==L)?R.slice(pos,pos+n):null;
+      pos+=n;
+      w.postMessage({t:'chunk',l:l,r:r,pos:pos},r?[l.buffer,r.buffer]:[l.buffer]);
+    }
+    setStatus('sLib');
+    w.postMessage({t:'init',urls:LIBS,ch:outCh,rate:rate,kbps:kbps,mono:mono});
+  });
+}
+/* cadangan kalau Worker tidak tersedia: encode di thread utama */
+async function encodeMain(L,R,N,rate,outCh,mono,kbps){
+  setStatus('sLib');await loadLame();
+  if(cancel)throw 'cancel';
+  setStatus('sEncode');setProgress(0);
+  var enc=new window.lamejs.Mp3Encoder(outCh,rate,kbps),BS=1152,parts=[];
+  var l16=new Int16Array(BS),r16=new Int16Array(BS),i=0,last=performance.now();
+  while(i<N){
+    var n=Math.min(BS,N-i),j;
+    if(mono){for(j=0;j<n;j++)l16[j]=f2i((L[i+j]+R[i+j])/2)}
+    else{for(j=0;j<n;j++){l16[j]=f2i(L[i+j]);r16[j]=f2i(R[i+j])}}
+    var a=n<BS?l16.subarray(0,n):l16,b=n<BS?r16.subarray(0,n):r16;
+    var out=mono?enc.encodeBuffer(a):enc.encodeBuffer(a,b);
+    if(out&&out.length)parts.push(out.slice());
+    i+=n;
+    if(performance.now()-last>40){setProgress(i/N);await tick();last=performance.now();if(cancel)throw 'cancel'}
+  }
+  var end=enc.flush();if(end&&end.length)parts.push(end.slice());
+  return new Blob(parts,{type:'audio/mpeg'});
+}
+
+/* ---------- konversi ---------- */
+async function convert(){
+  if(busy||!cur)return;
+  busy=true;cancel=false;job.abort=null;
+  keepAlive(true);askNotif();
+  var file=cur,kbps=parseInt($('kbps').value,10)||192,wantMono=$('chn').value==='mono';
+  show(3);setProgress(0);setStatus('sRead');
+  try{
+    var ab=await file.arrayBuffer();
+    if(cancel)throw 'cancel';
+    setStatus('sDecode');
+    var buf;
+    try{buf=await decode(ab)}catch(e){throw new Error('decode')}
+    ab=null;
+    if(cancel)throw 'cancel';
+    var rate=buf.sampleRate;
+    if(RATES.indexOf(rate)<0){buf=await resample(buf,44100);rate=44100}
+    var chs=Math.min(buf.numberOfChannels,2),mono=wantMono||chs===1,outCh=mono?1:2;
+    var L=buf.getChannelData(0),R=chs>1?buf.getChannelData(1):L,N=L.length;
+    if(!N)throw new Error('decode');
+    setProgress(0);
+    var blob;
+    try{
+      blob=await encodeInWorker(L,R,N,rate,outCh,mono,kbps);
+    }catch(e){
+      if(e==='cancel')throw e;
+      blob=await encodeMain(L,R,N,rate,outCh,mono,kbps);
+    }
+    buf=null;L=R=null;
+    if(!blob||!blob.size)throw new Error('decode');
+    setProgress(1);
+    resUrl=URL.createObjectURL(blob);
+    var name=baseName()+'.mp3';
+    $('player').src=resUrl;
+    $('dl').href=resUrl;$('dl').setAttribute('download',name);
+    lastRes={from:file.size,to:blob.size,kbps:kbps,mono:mono};
+    renderResMeta();
+    show(4);
+    notifyDone(name);
+  }catch(e){
+    if(e==='cancel'){toast('cancelled');show(2)}
+    else{
+      var m=e&&e.message,k='errGen';
+      if(m==='lib')k='errLib';
+      else if(m==='decode')k='errDecode';
+      else if(e&&(e.name==='RangeError'||/memory|allocation/i.test(m||'')))k='errMem';
+      toast(k);show(2);
+    }
+  }finally{
+    busy=false;job.abort=null;keepAlive(false);document.title=t('title');
+  }
+}
+function renderResMeta(){
+  if(!lastRes)return;
+  $('rmeta').textContent=t('resMeta',{from:fmtSize(lastRes.from),to:fmtSize(lastRes.to),kbps:lastRes.kbps,ch:t(lastRes.mono?'mono':'stereo').replace(/\s*\(.*\)/,'')});
+}
+
+/* ---------- event ---------- */
+$('f').addEventListener('change',function(){pick(this.files&&this.files[0])});
+$('go').addEventListener('click',convert);
+$('cancel').addEventListener('click',function(){cancel=true;if(job.abort)job.abort()});
+$('chg').addEventListener('click',reset);
+$('again').addEventListener('click',reset);
+var dz=$('dz');
+dz.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('f').click()}});
+var depth=0;
+function hasFiles(e){var d=e.dataTransfer;return d&&d.types&&Array.prototype.indexOf.call(d.types,'Files')>=0}
+window.addEventListener('dragenter',function(e){if(!hasFiles(e))return;e.preventDefault();depth++;dz.classList.add('over')});
+window.addEventListener('dragover',function(e){if(!hasFiles(e))return;e.preventDefault()});
+window.addEventListener('dragleave',function(e){if(!hasFiles(e))return;depth=Math.max(0,depth-1);if(!depth)dz.classList.remove('over')});
+window.addEventListener('drop',function(e){
+  if(!hasFiles(e))return;
+  e.preventDefault();depth=0;dz.classList.remove('over');
+  var f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)pick(f);
+});
+window.addEventListener('beforeunload',function(e){if(busy){e.preventDefault();e.returnValue=''}});
+
+/* ---------- mulai ---------- */
+applyLang();show(1);
+})();
+</script>
+</body>
+</html>

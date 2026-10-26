@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Music Separator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="Favicon.png">
+<style>
+:root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503;--in:#12161c;--bt:#252d38;--bb:#435063}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.45 'Instrument Sans',system-ui,sans-serif}
+.top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--ln)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.home{display:inline-grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--ln);border-radius:8px;color:var(--ink);text-decoration:none;transition:border-color .15s,color .15s}
+.home:hover{border-color:var(--ac);color:var(--ac)}
+.home svg{width:18px;height:18px}
+.logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.tag{color:var(--mu);font-size:12px}
+.drop{min-height:calc(100vh - 54px);display:grid;place-items:center;align-content:center;gap:28px;padding:24px}
+.dz{display:block;width:min(720px,100%);padding:72px 32px;border:2px dashed #3c4756;border-radius:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dz.over,.dz:hover{border-color:var(--ac);background:#1a2028}
+.dz h1{font:800 clamp(30px,5.5vw,52px)/1.02 'Bricolage Grotesque',sans-serif;margin:0 0 14px;letter-spacing:-.03em}
+.dz p{color:var(--mu);margin:0 auto 28px;max-width:46ch}
+.ico{width:64px;height:64px;color:var(--ac);margin-bottom:18px}
+.fmts{display:block;margin-top:16px;color:var(--mu);font-size:12px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(720px,100%)}
+.how div{padding:14px 16px;border:1px solid var(--ln);border-radius:10px;background:var(--pn)}
+.how b{display:block;font-weight:600;margin-bottom:3px}
+.how span{color:var(--mu);font-size:12px}
+.ws{max-width:760px;margin:0 auto;padding:24px 20px 48px;display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.fi{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.fi b{display:block;word-break:break-all}
+h2{margin:0;font:600 15px 'Instrument Sans',sans-serif;display:flex;align-items:center;gap:8px}
+h2 i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--ac);color:var(--ai);display:grid;place-items:center;font-size:12px}
+h3{margin:0;font:600 14px 'Instrument Sans',sans-serif}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu)}
+select{background:var(--in);color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px;font:inherit}
+.btn{font:600 13px 'Instrument Sans',sans-serif;border:1px solid var(--bb);background:var(--bt);color:var(--ink);padding:10px 14px;border-radius:6px;cursor:pointer}
+.btn:hover:not(:disabled){border-color:var(--ac)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.wide{width:100%}
+.lnk{background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit;padding:0;flex:none}
+.note,.mute{color:var(--mu);font-size:12px;margin:0}
+.stat{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mu)}
+.pbar{height:4px;background:var(--ln);border-radius:2px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--ac);width:0;transition:width .15s}
+.pbar i.ind{width:35%;transition:none;animation:sl 1.1s ease-in-out infinite alternate}
+@keyframes sl{to{transform:translateX(185%)}}
+@media (prefers-reduced-motion:reduce){.pbar i.ind{animation:none;width:100%}}
+.mvb{display:flex;flex-direction:column;gap:8px}
+.mvb input[type=password]{background:var(--in);color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px;font:inherit}
+.mvb a{color:var(--ac)}
+.chk{flex-direction:row;align-items:center;gap:8px}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.out{border:1px solid var(--ln);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+audio{width:100%}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#161b22;padding:9px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;max-width:90vw}
+#toast.on{opacity:1}
+@media (max-width:700px){.tag{display:none}.how,.outs{grid-template-columns:1fr}}
+html[data-theme=light]{color-scheme:light;--bg:#f6f3ec;--pn:#ffffff;--ln:#ddd6c6;--ink:#1d232c;--mu:#5f6a77;--in:#faf8f3;--bt:#ece7da;--bb:#cfc7b4}
+html[data-theme=light] .dz{border-color:#bfb7a3}
+html[data-theme=light] .dz.over,html[data-theme=light] .dz:hover{background:#efeadd}
+html[data-theme=light] #toast{color:#f6f3ec}
+</style>
+<script>
+/* Bahasa & tema: dibaca dari index (?lang=&theme=) atau localStorage, sama seperti halaman lain */
+(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();
+</script>
+</head>
+<body>
+<header class="top"><div class="brand"><a class="home" id="home" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h4.5v-5.5h4v5.5h4.5V10"/></svg></a><div class="logo">Music Separator</div></div><span class="tag" data-t="tag"></span></header>
+<main>
+<section id="drop" class="drop">
+  <label class="dz" id="dz" for="pick">
+    <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 32h6M20 24v16M26 16v32M32 22v20M38 12v40M44 24v16M50 28v8M56 32h0" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+    <h1 data-t="dzh"></h1>
+    <p data-t="dzp"></p>
+    <span class="btn pri" data-t="pick"></span>
+    <span class="fmts" data-t="fmts"></span>
+  </label>
+  <input type="file" id="pick" accept="audio/*,video/*" hidden>
+  <div class="how">
+    <div><b data-t="h1a"></b><span data-t="d1a"></span></div>
+    <div><b data-t="h2a"></b><span data-t="d2a"></span></div>
+    <div><b data-t="h3a"></b><span data-t="d3a"></span></div>
+  </div>
+</section>
+
+<div id="ws" class="ws" hidden>
+  <div class="panel">
+    <div class="fi"><div><b id="fn"></b><span id="fm" class="mute"></span></div><button id="swap" class="lnk" data-t="swap"></button></div>
+    <h2><i>1</i><span data-t="s1"></span></h2>
+    <label><span data-t="method"></span>
+      <select id="method"><option value="ai" data-t="mAI"></option><option value="mvsep" data-t="mMV"></option><option value="clean" data-t="mClean"></option><option value="fast" data-t="mFast"></option></select>
+    </label>
+    <p id="mnote" class="note"></p>
+    <div id="mvbox" class="mvb" hidden>
+      <label><span data-t="tokL"></span><input type="password" id="tok" autocomplete="off" spellcheck="false"></label>
+      <label class="chk"><input type="checkbox" id="rem"><span data-t="remL"></span></label>
+      <a href="https://mvsep.com/user-api" target="_blank" rel="noopener" data-t="tokA"></a>
+      <div id="mvl" class="note"></div>
+    </div>
+    <button id="go" class="btn pri wide" data-t="go"></button>
+    <div id="stat" class="stat" hidden><span id="stx"></span><div class="pbar"><i id="pb"></i></div></div>
+    <p class="note" data-t="tip"></p>
+  </div>
+  <div id="res" class="panel" hidden>
+    <h2><i>2</i><span data-t="s2"></span></h2>
+    <label><span data-t="fmt"></span>
+      <select id="fmt"><option value="wav">WAV</option><option value="mp3">MP3</option></select>
+    </label>
+    <div class="outs">
+      <div class="out"><h3 data-t="music"></h3><audio id="am" controls></audio><button class="btn pri" id="dm" data-t="dl"></button></div>
+      <div class="out"><h3 data-t="voice"></h3><audio id="av" controls></audio><button class="btn pri" id="dv" data-t="dl"></button></div>
+    </div>
+  </div>
+</div>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+/*DSP*/
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function makeFFT(n){
+  const lv=Math.round(Math.log2(n)),cs=new Float64Array(n/2),sn=new Float64Array(n/2),rev=new Uint32Array(n);
+  for(let i=0;i<n/2;i++){cs[i]=Math.cos(2*Math.PI*i/n);sn[i]=Math.sin(2*Math.PI*i/n);}
+  for(let i=0;i<n;i++){let r=0,x=i;for(let j=0;j<lv;j++){r=(r<<1)|(x&1);x>>=1;}rev[i]=r;}
+  return function(re,im){
+    for(let i=0;i<n;i++){const j=rev[i];if(j>i){let a=re[i];re[i]=re[j];re[j]=a;a=im[i];im[i]=im[j];im[j]=a;}}
+    for(let size=2;size<=n;size<<=1){
+      const half=size>>1,step=n/size;
+      for(let i=0;i<n;i+=size){
+        for(let j=i,k=0;j<i+half;j++,k+=step){
+          const l=j+half,tr=re[l]*cs[k]+im[l]*sn[k],ti=-re[l]*sn[k]+im[l]*cs[k];
+          re[l]=re[j]-tr;im[l]=im[j]-ti;re[j]+=tr;im[j]+=ti;
+        }
+      }
+    }
+  };
+}
+function peakOf(a){let p=0;for(let i=0;i<a.length;i++){const x=a[i]<0?-a[i]:a[i];if(x>p)p=x;}return p;}
+function fit(arrs,maxGain){
+  let p=0;arrs.forEach(a=>{p=Math.max(p,peakOf(a));});
+  const g=p>0?Math.min(maxGain,0.92/p):1;
+  if(g!==1)arrs.forEach(a=>{for(let i=0;i<a.length;i++)a[i]*=g;});
+}
+const tick=(()=>{const ch=new MessageChannel(),q=[];ch.port1.onmessage=()=>{const f=q.shift();if(f)f();};return()=>new Promise(r=>{q.push(r);ch.port2.postMessage(0);});})();
+function fail(key){const e=new Error(key);e.key=key;return e;}
+async function separate(L,R,sr,mode,onP){
+  const n=L.length;let em=0,es=0;
+  for(let i=0;i<n;i++){const m=L[i]+R[i],s=L[i]-R[i];em+=m*m;es+=s*s;}
+  if(em+es<1e-6)throw fail('eSil');
+  if(es<=em*1e-6)throw fail('eMono');
+  const v=new Float32Array(n),mL=new Float32Array(n),mR=new Float32Array(n);
+  if(mode==='fast'){
+    for(let i=0;i<n;i++){v[i]=(L[i]+R[i])/2;const s=(L[i]-R[i])/2;mL[i]=s;mR[i]=s;}
+    fit([v],8);fit([mL,mR],8);
+    if(onP)onP(1);
+    return{vocal:[v],music:[mL,mR]};
+  }
+  const N=4096,H=1024,fft=makeFFT(N),nb=N/2+1;
+  const win=new Float32Array(N),bw=new Float32Array(nb);
+  for(let i=0;i<N;i++)win[i]=0.5-0.5*Math.cos(2*Math.PI*i/N);
+  for(let k=0;k<nb;k++){const f=k*sr/N;bw[k]=clamp((f-60)/60,0,1)*clamp((12000-f)/3000,0,1);}
+  const re=new Float32Array(N),im=new Float32Array(N),oR=new Float32Array(N),oI=new Float32Array(N);
+  const total=Math.ceil((n+N-H)/H);let fr=0;
+  for(let s=-(N-H);s<n;s+=H,fr++){
+    for(let i=0;i<N;i++){const j=s+i,ok=j>=0&&j<n;re[i]=ok?L[j]*win[i]:0;im[i]=ok?R[j]*win[i]:0;}
+    fft(re,im);
+    for(let k=0;k<=N/2;k++){
+      const k2=(N-k)&(N-1),Xr=re[k],Xi=im[k],Yr=re[k2],Yi=im[k2];
+      const Lr=(Xr+Yr)/2,Li=(Xi-Yi)/2,Rr=(Xi+Yi)/2,Ri=(Yr-Xr)/2;
+      const Mr=(Lr+Rr)/2,Mi=(Li+Ri)/2,Sr=(Lr-Rr)/2,Si=(Li-Ri)/2;
+      const pm=Mr*Mr+Mi*Mi,c=pm/(pm+Sr*Sr+Si*Si+1e-12),x=clamp((c-0.6)/0.35,0,1),g=x*x*(3-2*x)*bw[k];
+      const Vr=Mr*g,Vi=Mi*g;
+      oR[k]=Vr;oI[k]=Vi;
+      if(k>0&&k<N/2){oR[N-k]=Vr;oI[N-k]=-Vi;}
+    }
+    oI[0]=0;oI[N/2]=0;
+    fft(oI,oR);
+    for(let i=0;i<N;i++){const j=s+i;if(j>=0&&j<n)v[j]+=oR[i]/N*win[i];}
+    if((fr&31)===0){if(onP)onP(Math.min(1,fr/total));await tick();}
+  }
+  for(let i=0;i<n;i++){v[i]/=1.5;mL[i]=L[i]-v[i];mR[i]=R[i]-v[i];}
+  fit([v],1);fit([mL,mR],1);
+  if(onP)onP(1);
+  return{vocal:[v],music:[mL,mR]};
+}
+function wav(chs,sr){
+  const n=chs[0].length,c=chs.length,b=new ArrayBuffer(44+n*c*2),d=new DataView(b);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)d.setUint8(o+i,s.charCodeAt(i));};
+  w(0,'RIFF');d.setUint32(4,36+n*c*2,true);w(8,'WAVE');w(12,'fmt ');d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,c,true);d.setUint32(24,sr,true);d.setUint32(28,sr*c*2,true);d.setUint16(32,c*2,true);d.setUint16(34,16,true);w(36,'data');d.setUint32(40,n*c*2,true);
+  let o=44;
+  for(let i=0;i<n;i++)for(let k=0;k<c;k++){const s=clamp(chs[k][i],-1,1);d.setInt16(o,s<0?s*32768:s*32767,true);o+=2;}
+  return new Blob([b],{type:'audio/wav'});
+}
+/* ---------- AI: UVR MDX-Net (onnxruntime-web) ---------- */
+function makeBlu(n){
+  let M=1;while(M<2*n-1)M<<=1;
+  const f=makeFFT(M),wr=new Float64Array(n),wi=new Float64Array(n),br=new Float64Array(M),bi=new Float64Array(M),ar=new Float64Array(M),ai=new Float64Array(M);
+  for(let k=0;k<n;k++){const a=Math.PI*((k*k)%(2*n))/n;wr[k]=Math.cos(a);wi[k]=-Math.sin(a);br[k]=wr[k];bi[k]=-wi[k];if(k>0){br[M-k]=br[k];bi[M-k]=bi[k];}}
+  f(br,bi);
+  return function(re,im){
+    ar.fill(0);ai.fill(0);
+    for(let k=0;k<n;k++){ar[k]=re[k]*wr[k]-im[k]*wi[k];ai[k]=re[k]*wi[k]+im[k]*wr[k];}
+    f(ar,ai);
+    for(let k=0;k<M;k++){const x=ar[k]*br[k]-ai[k]*bi[k],y=ar[k]*bi[k]+ai[k]*br[k];ar[k]=x;ai[k]=y;}
+    f(ai,ar);
+    for(let k=0;k<n;k++){const cr=ar[k]/M,ci=ai[k]/M;re[k]=cr*wr[k]-ci*wi[k];im[k]=cr*wi[k]+ci*wr[k];}
+  };
+}
+function mdxCore(nf,df,T,hop){
+  const blu=makeBlu(nf),win=new Float64Array(nf),h=nf>>1,P=hop*(T-1),len=P+nf,env=new Float64Array(len);
+  for(let i=0;i<nf;i++)win[i]=0.5-0.5*Math.cos(2*Math.PI*i/nf);
+  for(let t=0;t<T;t++)for(let i=0;i<nf;i++)env[t*hop+i]+=win[i]*win[i];
+  const re=new Float64Array(nf),im=new Float64Array(nf);
+  const at=(a,j)=>{if(j<0)j=-j;else if(j>=P)j=2*(P-1)-j;return a[j];};
+  return{
+    stft(L,R){
+      const x=new Float32Array(4*df*T);
+      for(let t=0;t<T;t++){
+        for(let i=0;i<nf;i++){const j=t*hop+i-h;re[i]=at(L,j)*win[i];im[i]=at(R,j)*win[i];}
+        blu(re,im);
+        for(let k=0;k<df;k++){
+          const k2=(nf-k)%nf;
+          x[k*T+t]=(re[k]+re[k2])/2;x[(df+k)*T+t]=(im[k]-im[k2])/2;
+          x[(2*df+k)*T+t]=(im[k]+im[k2])/2;x[(3*df+k)*T+t]=(re[k2]-re[k])/2;
+        }
+      }
+      return x;
+    },
+    istft(x){
+      const oL=new Float64Array(len),oR=new Float64Array(len);
+      for(let t=0;t<T;t++){
+        re.fill(0);im.fill(0);
+        for(let k=0;k<df;k++){
+          const Ar=x[k*T+t],Ai=k?x[(df+k)*T+t]:0,Br=x[(2*df+k)*T+t],Bi=k?x[(3*df+k)*T+t]:0;
+          re[k]=Ar-Bi;im[k]=Ai+Br;
+          if(k>0){re[nf-k]=Ar+Bi;im[nf-k]=Br-Ai;}
+        }
+        blu(im,re);
+        for(let i=0;i<nf;i++){oL[t*hop+i]+=re[i]/nf*win[i];oR[t*hop+i]+=im[i]/nf*win[i];}
+      }
+      const a=new Float32Array(P),b=new Float32Array(P);
+      for(let j=0;j<P;j++){const e=env[h+j]>1e-10?env[h+j]:1;a[j]=oL[h+j]/e;b[j]=oR[h+j]/e;}
+      return[a,b];
+    }
+  };
+}
+async function processAI(L,R,cfg,run,onP){
+  const nf=cfg.nf,T=256,hop=1024,P=hop*(T-1),trim=nf>>1,gen=P-2*trim,n=L.length,core=mdxCore(nf,cfg.df,T,hop);
+  const iL=new Float32Array(n),iR=new Float32Array(n),cl=new Float32Array(P),cr=new Float32Array(P),steps=Math.ceil(n/gen);
+  for(let i=0,c=0;i<n;i+=gen,c++){
+    for(let j=0;j<P;j++){const idx=i-trim+j,ok=idx>=0&&idx<n;cl[j]=ok?L[idx]:0;cr[j]=ok?R[idx]:0;}
+    const out=await run(core.stft(cl,cr)),ab=core.istft(out),m=Math.min(gen,n-i);
+    for(let j=0;j<m;j++){iL[i+j]=ab[0][trim+j]*cfg.comp;iR[i+j]=ab[1][trim+j]*cfg.comp;}
+    if(onP)onP((c+1)/steps);
+    await tick();
+  }
+  const vL=new Float32Array(n),vR=new Float32Array(n);
+  for(let i=0;i<n;i++){vL[i]=L[i]-iL[i];vR[i]=R[i]-iR[i];}
+  return{music:[iL,iR],vocal:[vL,vR]};
+}
+const CANDS=[[3072,6144],[3072,7680],[2560,5120],[2048,6144],[2048,5120]];
+const MODEL_URLS=['https://huggingface.co/Politrees/UVR_resources/resolve/b9cd581f1d7826c6f4ccd4923d2c9f03ae3017d7/MDXNet_models/UVR-MDX-NET-Inst_HQ_5.onnx','https://huggingface.co/aae2kmitl/kotube-models/resolve/main/separation/UVR-MDX-NET-Inst_HQ_5.onnx'];
+async function pickCfg(mk,L,R){
+  const T=256,hop=1024,P=hop*(T-1),pl=new Float32Array(P),pr=new Float32Array(P),s0=Math.max(0,Math.floor(L.length/2-P/2));
+  pl.set(L.subarray(s0,s0+P));pr.set(R.subarray(s0,s0+P));
+  let best=null;
+  for(const[df,nf]of CANDS){
+    try{
+      const core=mdxCore(nf,df,T,hop),a=core.istft(await mk(df)(core.stft(pl,pr)))[0],tr=nf>>1;
+      let sxy=0,sxx=0,syy=0;
+      for(let j=tr;j<P-tr;j++){sxy+=a[j]*pl[j];sxx+=pl[j]*pl[j];syy+=a[j]*a[j];}
+      const c=sxy/Math.sqrt(sxx*syy+1e-20);
+      if(c===c&&(!best||c>best.c))best={df:df,nf:nf,c:c};
+    }catch(e){}
+  }
+  if(!best||best.c<0.3)throw fail('eCfg');
+  return best;
+}
+let ortP=null,ortGpu=false;
+function loadScript(u){return new Promise((res,rej)=>{const x=document.createElement('script');x.src=u;x.onload=res;x.onerror=()=>{x.remove();rej(new Error('load'));};document.head.appendChild(x);});}
+function loadOrt(){
+  if(window.ort)return Promise.resolve();
+  const B='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/';
+  return ortP||(ortP=(async()=>{
+    if(navigator.gpu){try{await loadScript(B+'ort.webgpu.min.js');ortGpu=true;return;}catch(e){}}
+    try{await loadScript(B+'ort.min.js');}catch(e){ortP=null;throw fail('eNet');}
+  })());
+}
+async function getModel(onP){
+  for(const u of MODEL_URLS){
+    try{
+      let cache=null,r=null;
+      if(window.caches){try{cache=await caches.open('sekat-v1');r=await cache.match(u);}catch(e){}}
+      if(!r){r=await fetch(u);if(!r.ok)throw new Error('http');if(cache){try{await cache.put(u,r.clone());}catch(e){}}}
+      const tot=+r.headers.get('content-length')||0,rd=r.body.getReader(),parts=[];let got=0;
+      for(;;){const x=await rd.read();if(x.done)break;parts.push(x.value);got+=x.value.length;onP(tot?got/tot:null,got);}
+      return await new Blob(parts).arrayBuffer();
+    }catch(e){}
+  }
+  throw fail('eNet');
+}
+async function aiSeparate(L,R,st){
+  if(peakOf(L)<1e-4&&peakOf(R)<1e-4)throw fail('eSil');
+  let buf;
+  try{await loadOrt();ort.env.wasm.proxy=false;buf=await getModel((p,g)=>st('dlm',p,g));}
+  catch(e){throw e.key?e:fail('eNet');}
+  let last=null;
+  for(const ep of(ortGpu?['webgpu','wasm']:['wasm'])){
+    try{
+      st('ldm');
+      const sess=await ort.InferenceSession.create(new Uint8Array(buf),{executionProviders:[ep]});
+      const inN=sess.inputNames[0],outN=sess.outputNames[0];
+      const mk=df=>async x=>{const o=await sess.run({[inN]:new ort.Tensor('float32',x,[1,4,df,256])});return o[outN].data;};
+      const cfg=await pickCfg(mk,L,R),pk=ep==='webgpu'?'procg':'proc';
+      st(pk,0);
+      const res=await processAI(L,R,{nf:cfg.nf,df:cfg.df,comp:1.035},mk(cfg.df),p=>st(pk,p));
+      fit(res.music,1);fit(res.vocal,1);
+      return res;
+    }catch(e){last=e;}
+  }
+  throw last||fail('eNet');
+}
+function pickMv(files){
+  const arr=Array.isArray(files)?files:[];
+  const key=f=>String((f&&(f.type||f.download||f.name||f.url))||'').toLowerCase();
+  const isM=f=>/instr|no[ _-]?vocal|other|music/.test(key(f)),isV=f=>!isM(f)&&/vocal/.test(key(f));
+  const v=arr.find(isV);let m=arr.find(isM);
+  if(v&&!m&&arr.length>1)m=arr.find(f=>f!==v);
+  return v&&m&&v.url&&m.url?{vocal:v.url,music:m.url}:null;
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const MVSEP_WORKER='https://sekat-proxy.bilalfatihdm.workers.dev/'; // isi alamat Cloudflare Worker, contoh: https://sekat-proxy.namamu.workers.dev
+function mvProxy(){const h=location.hostname;if(h==='localhost'||h==='127.0.0.1')return'http://127.0.0.1:8787';return MVSEP_WORKER.replace(/\/+$/,'');}
+async function mvsepSeparate(file,token,st){
+  const PX=mvProxy(),API=PX+'/api/separation/';
+  if(!PX)throw fail('eWorker');
+  const fd=new FormData();fd.append('api_token',token);fd.append('audiofile',file,file.name);fd.append('sep_type','40');fd.append('output_format','1');
+  st('mvup');
+  let j;
+  let r;try{r=await fetch(API+'create',{method:'POST',body:fd});}catch(e){throw fail('eProxy');}
+  try{j=await r.json();}catch(e){const x=fail('eMv');x.detail='HTTP '+r.status;throw x;}
+  if(!j||!j.success){const e=fail('eMv');e.detail=(j&&j.data&&j.data.message)||'';throw e;}
+  const hash=j.data.hash;let files=null;
+  for(let i=0;i<720&&!files;i++){
+    await sleep(i?5000:2000);
+    let g;try{g=await(await fetch(API+'get?hash='+encodeURIComponent(hash))).json();}catch(e){continue;}
+    const s=g&&g.status;
+    if(s==='done'){files=g.data&&g.data.files;break;}
+    if(s==='failed'||s==='not_found'){const e=fail('eMv');e.detail=(g.data&&g.data.message)||s;throw e;}
+    st(s==='waiting'?'mvq':'mvp');
+  }
+  const pk=pickMv(files);
+  if(!pk){const e=fail('eMv');e.detail=files?'format':'timeout';throw e;}
+  st('mvd');
+  const ctx=new(window.AudioContext||window.webkitAudioContext)();
+  try{
+    const get=async u=>{const ab=await ctx.decodeAudioData(await(await fetch(PX+'/dl?url='+encodeURIComponent(u))).arrayBuffer());return{ch:Array.from({length:ab.numberOfChannels},(_,i)=>ab.getChannelData(i)),sr:ab.sampleRate};};
+    const m=await get(pk.music),v=await get(pk.vocal);
+    return{music:m.ch,vocal:v.ch,sr:m.sr};
+  }catch(e){const x=fail('eMvf');x.links=[pk.music,pk.vocal];throw x;}
+  finally{ctx.close();}
+}
+/*END-DSP*/
+
+/* ---------- teks dua bahasa ---------- */
+const T={
+id:{title:'Music Separator',tag:'Filemu tetap di perangkatmu. Semua diproses di browser, tanpa API key',home:'Beranda',
+dzh:'Taruh video atau audiomu di sini',dzp:'Music Separator memisahkan musik dan suara (vokal) dari sebuah lagu, lalu kamu unduh salah satunya atau keduanya.',pick:'Pilih file',fmts:'MP3, WAV, M4A, MP4, WebM, atau MOV. Bisa juga diseret ke mana saja di halaman ini.',
+h1a:'Unggah',d1a:'Masukkan video atau audio yang berisi musik dan suara.',h2a:'Pisahkan',d2a:'Pilih metode. Prosesnya berjalan di browsermu, tanpa kirim file ke server.',h3a:'Unduh',d3a:'Ambil file musik saja atau suara saja dalam format WAV atau MP3.',
+swap:'Ganti file',s1:'Atur pemisahan',s2:'Hasil',method:'Metode',mAI:'AI lokal MDX-Net (bersih, GPU jika ada)',mMV:'MVSEP (server gratis, pakai token)',mClean:'Bersih (analisis spektrum, lebih lambat)',mFast:'Cepat (kanal tengah, instan)',
+nAI:'Memakai model AI UVR MDX-Net. Pertama kali mengunduh model sekitar 60 MB (disimpan di browser), lalu prosesnya butuh beberapa menit untuk lagu 3 sampai 4 menit. Jika browser mendukung WebGPU (Chrome atau Edge di komputer), otomatis memakai kartu grafis sehingga jauh lebih cepat.',nMV:'File diunggah ke server MVSEP dan diproses di sana (model BS Roformer: lebih bersih, tidak membebani komputermu, tapi bisa antre). Perlu akun gratis dan token API. MVSEP mengalami insiden keamanan pada Oktober 2026, jadi pakai kata sandi yang unik dan jangan unggah audio rahasia. Metode ini butuh proxy: node proxy.js saat di localhost, atau Cloudflare Worker saat sudah di-hosting.',nClean:'Memisahkan per frekuensi dan mengambil suara yang berada di tengah stereo. Lebih bersih, butuh beberapa detik sampai menit.',nFast:'Mengambil suara tengah stereo secara langsung. Sangat cepat, tapi bass dan drum ikut tercampur.',
+fmt:'Format unduhan',go:'Pisahkan musik dan suara',music:'Musik saja',voice:'Suara saja',dl:'Unduh',
+tip:'Metode AI paling bersih tetapi paling lambat. Metode Bersih dan Cepat adalah pemrosesan sinyal biasa (paling cocok untuk lagu stereo dengan vokal di tengah), jadi sebagian suara bisa masih tersisa. Kamu boleh pindah tab saat memproses, tapi jangan tutup tab ini.',
+reading:'Membaca audio',proc:'Memisahkan',enc:'Membuat file MP3',done:'Selesai. Putar atau unduh hasilnya.',
+eFile:'File itu bukan video atau audio. Pilih MP3, WAV, MP4, atau sejenisnya.',eDecode:'Audio tidak terbaca. Pastikan filenya punya suara dan formatnya didukung browser.',
+eMono:'Audio ini mono atau kedua kanalnya identik, jadi tidak bisa dipisahkan dengan metode ini.',eSil:'Audio ini kosong atau terlalu pelan.',eMp3:'Pustaka MP3 gagal dimuat. Pastikan internet aktif, atau pilih WAV.',eNet:'Model AI atau pustakanya gagal dimuat. Pastikan internet aktif (hanya saat pertama kali), lalu coba lagi.',eSr:'Browser ini tidak mendukung audio 44,1 kHz untuk metode AI. Coba Chrome, Edge, atau Firefox terbaru.',eCfg:'Model AI terunduh tetapi formatnya tidak dikenali. Coba metode Bersih dulu.',dlm:'Mengunduh model AI (sekali saja)',ldm:'Menyiapkan model AI',tokL:'Token API MVSEP',remL:'Ingat token di perangkat ini',tokA:'Ambil token API (mvsep.com)',mvup:'Mengunggah ke MVSEP',mvq:'Menunggu antrean MVSEP',mvp:'MVSEP sedang memproses',mvd:'Mengunduh hasil dari MVSEP',procg:'Memisahkan (GPU)',eTok:'Isi token API MVSEP dulu.',eMv:'MVSEP menolak atau gagal memproses file',eCors:'Browser tidak bisa menghubungi MVSEP dari halaman ini (kemungkinan diblokir CORS). Pakai metode AI lokal, atau unggah manual di mvsep.com.',eProxy:'Tidak bisa terhubung ke proxy. Di localhost: jalankan node proxy.js di folder proxy.js, biarkan terbuka, lalu coba lagi. Di situs hosting: periksa alamat Worker dan daftar domain yang diizinkan di worker.js.',eWorker:'Alamat Worker belum diisi. Isi konstanta MVSEP_WORKER di file HTML dengan alamat Cloudflare Worker-mu.',eMvf:'Hasil sudah jadi di MVSEP, tapi browser tidak boleh mengunduhnya langsung. Buka tautan di bawah untuk mengunduh.',eGen:'Terjadi kesalahan: '},
+en:{title:'Music_Separator',tag:'Your file stays on your device. Everything runs in the browser, no API key',home:'Home',
+dzh:'Drop your video or audio here',dzp:'Music Separator separates the music and the voice (vocals) of a song, then you download one or both.',pick:'Choose file',fmts:'MP3, WAV, M4A, MP4, WebM, or MOV. You can also drag it anywhere on this page.',
+h1a:'Upload',d1a:'Add a video or audio file that contains music and voice.',h2a:'Separate',d2a:'Pick a method. It runs in your browser, nothing is sent to a server.',h3a:'Download',d3a:'Grab the music-only or voice-only file as WAV or MP3.',
+swap:'Change file',s1:'Separation settings',s2:'Results',method:'Method',mAI:'Local AI MDX-Net (clean, GPU if available)',mMV:'MVSEP (free server, needs token)',mClean:'Clean (spectrum analysis, slower)',mFast:'Fast (center channel, instant)',
+nAI:'Uses the UVR MDX-Net AI model. The first run downloads about 60 MB (kept in your browser), then a 3 to 4 minute song takes a few minutes. If your browser supports WebGPU (Chrome or Edge on a computer), it uses the graphics card automatically and is much faster.',nMV:'Your file is uploaded to the MVSEP server and processed there (BS Roformer model: cleaner, no load on your computer, but it may queue). Needs a free account and an API token. MVSEP had a security incident in October 2026, so use a unique password and do not upload confidential audio. This method needs a proxy: node proxy.js on localhost, or a Cloudflare Worker once hosted.',nClean:'Splits by frequency and picks the sound sitting in the stereo center. Cleaner, takes seconds to minutes.',nFast:'Picks the stereo center directly. Very fast, but bass and drums get mixed in.',
+fmt:'Download format',go:'Separate music and voice',music:'Music only',voice:'Voice only',dl:'Download',
+tip:'The AI method is the cleanest but slowest. Clean and Fast are plain signal processing (best on stereo songs with centered vocals), so some voice may remain. You can switch tabs while it works, but do not close this one.',
+reading:'Reading audio',proc:'Separating',enc:'Creating MP3 file',done:'Done. Play or download the results.',
+eFile:'That file is not a video or audio. Choose MP3, WAV, MP4, or similar.',eDecode:'The audio could not be read. Make sure the file has sound and a browser-supported format.',
+eMono:'This audio is mono or both channels are identical, so it cannot be separated with this method.',eSil:'This audio is empty or too quiet.',eMp3:'The MP3 library failed to load. Make sure you are online, or choose WAV.',eNet:'The AI model or its library failed to load. Make sure you are online (only the first time), then try again.',eSr:'This browser does not support 44.1 kHz audio for the AI method. Try the latest Chrome, Edge, or Firefox.',eCfg:'The AI model downloaded but its format was not recognized. Try the Clean method first.',dlm:'Downloading AI model (one time only)',ldm:'Preparing AI model',tokL:'MVSEP API token',remL:'Remember token on this device',tokA:'Get an API token (mvsep.com)',mvup:'Uploading to MVSEP',mvq:'Waiting in the MVSEP queue',mvp:'MVSEP is processing',mvd:'Downloading results from MVSEP',procg:'Separating (GPU)',eTok:'Enter your MVSEP API token first.',eMv:'MVSEP rejected or failed to process the file',eCors:'The browser cannot reach MVSEP from this page (probably blocked by CORS). Use the local AI method, or upload manually at mvsep.com.',eProxy:'Cannot reach the proxy. On localhost: run node proxy.js in the folder containing proxy.js, keep it open, then try again. On a hosted site: check the Worker address and the allowed domain list in worker.js.',eWorker:'The Worker address is not set. Fill in the MVSEP_WORKER constant in the HTML file with your Cloudflare Worker address.',eMvf:'The result is ready on MVSEP, but the browser may not download it directly. Open the links below to download.',eGen:'Something went wrong: '}
+};
+const $=id=>document.getElementById(id),BT=window.BT||{lang:'id',theme:'dark'};
+const t=k=>(T[BT.lang]||T.id)[k]||k;
+let file=null,R=null,blobs=null,urls=null,busy=false,tt=0;
+function apply(){
+  document.documentElement.lang=BT.lang;document.documentElement.setAttribute('data-theme',BT.theme);document.title=t('title');
+  document.querySelectorAll('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t);});
+  const h=$('home');h.href='index.html?lang='+BT.lang+'&theme='+BT.theme;h.title=t('home');h.setAttribute('aria-label',t('home'));
+  $('mnote').textContent=t({ai:'nAI',mvsep:'nMV',clean:'nClean',fast:'nFast'}[$('method').value]);
+  $('mvbox').hidden=$('method').value!=='mvsep';
+}
+window.addEventListener('storage',e=>{
+  if(e.key==='bt_lang')BT.lang=e.newValue==='en'?'en':'id';
+  else if(e.key==='bt_theme')BT.theme=e.newValue==='light'?'light':'dark';
+  else return;
+  apply();
+});
+function toast(m){const x=$('toast');x.textContent=m;x.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>x.classList.remove('on'),4200);}
+function setStat(key,p,g){
+  $('stat').hidden=false;$('stx').textContent=t(key)+(p!=null?' '+Math.round(p*100)+'%':'')+(g?' · '+(g/1048576).toFixed(0)+' MB':'');
+  const b=$('pb');if(p==null){b.className='ind';b.style.width='';}else{b.className='';b.style.width=(p*100)+'%';}
+}
+function lock(b){['go','dm','dv','method','fmt'].forEach(i=>{$(i).disabled=b;});}
+function clearRes(){
+  if(urls){URL.revokeObjectURL(urls.music);URL.revokeObjectURL(urls.voice);}
+  $('am').removeAttribute('src');$('av').removeAttribute('src');$('res').hidden=true;R=null;blobs=null;urls=null;
+}
+const okType=f=>/^(audio|video)\//.test(f.type)||/\.(mp3|wav|m4a|aac|ogg|oga|flac|opus|mp4|webm|mov|mkv|m4v)$/i.test(f.name);
+function load(f){
+  if(busy)return;
+  if(!okType(f))return toast(t('eFile'));
+  clearRes();file=f;$('fn').textContent=f.name;$('fm').textContent=(f.size/1048576).toFixed(1)+' MB';
+  $('stat').hidden=true;$('drop').hidden=true;$('ws').hidden=false;
+}
+$('pick').onchange=e=>{const f=e.target.files[0];if(f)load(f);e.target.value='';};
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();$('dz').classList.add('over');}));
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)$('dz').classList.remove('over');});
+document.addEventListener('drop',e=>{e.preventDefault();$('dz').classList.remove('over');const f=e.dataTransfer.files[0];if(f)load(f);});
+$('swap').onclick=()=>{if(busy)return;clearRes();file=null;$('ws').hidden=true;$('drop').hidden=false;};
+$('method').onchange=apply;
+const base=()=>(file&&file.name.replace(/\.[^.]+$/,''))||'audio';
+function errMsg(e){
+  if(e&&e.key)return t(e.key)+(e.detail?' ('+e.detail+')':'');
+  if(e&&(e.name==='EncodingError'||e.name==='NotSupportedError'))return t('eDecode');
+  return t('eGen')+((e&&e.message)||e);
+}
+$('go').onclick=async()=>{
+  if(busy||!file)return;
+  busy=true;lock(true);keepAlive(true);clearRes();setStat('reading');
+  try{
+    const mode=$('method').value;let o,sr;
+    if(mode==='mvsep'){
+      const tk=$('tok').value.trim();if(!tk)throw fail('eTok');
+      try{if($('rem').checked)localStorage.setItem('sekat_mv',tk);else localStorage.removeItem('sekat_mv');}catch(e){}
+      $('mvl').textContent='';
+      o=await mvsepSeparate(file,tk,setStat);sr=o.sr;
+    }else{
+      const buf=await file.arrayBuffer(),ctx=new(window.AudioContext||window.webkitAudioContext)(mode==='ai'?{sampleRate:44100}:undefined);
+      let ab;try{ab=await ctx.decodeAudioData(buf);}finally{ctx.close();}
+      const L=ab.getChannelData(0),Rr=ab.numberOfChannels>1?ab.getChannelData(1):L;
+      if(mode==='ai'){
+        if(ab.sampleRate!==44100)throw fail('eSr');
+        o=await aiSeparate(L,Rr,setStat);
+      }else{setStat('proc',0);o=await separate(L,Rr,ab.sampleRate,mode,p=>setStat('proc',p));}
+      sr=ab.sampleRate;
+    }
+    R={music:o.music,vocal:o.vocal,sr:sr};
+    blobs={music:wav(o.music,R.sr),voice:wav(o.vocal,R.sr)};
+    urls={music:URL.createObjectURL(blobs.music),voice:URL.createObjectURL(blobs.voice)};
+    $('am').src=urls.music;$('av').src=urls.voice;$('res').hidden=false;
+    $('stx').textContent=t('done');$('pb').className='';$('pb').style.width='100%';
+  }catch(e){
+    $('stat').hidden=true;toast(errMsg(e));
+    if(e&&e.links){const bx=$('mvl');bx.textContent='';e.links.forEach(u=>{const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';a.textContent=decodeURIComponent(u.split('/').pop()||u)+'  ';bx.appendChild(a);});}
+  }
+  finally{keepAlive(false);busy=false;lock(false);}
+};
+
+/* ---------- agar proses tidak melambat saat pindah tab ---------- */
+let kaCtx=null,kaRel=null,kaWl=null;
+function keepAlive(on){
+  if(on){
+    try{if(navigator.locks&&!kaRel){const p=new Promise(r=>{kaRel=r;});navigator.locks.request('sekat-proses',()=>p).catch(()=>{});}}catch(e){}
+    try{
+      if(!kaCtx){kaCtx=new(window.AudioContext||window.webkitAudioContext)();const o=kaCtx.createOscillator(),g=kaCtx.createGain();g.gain.value=0.0001;o.connect(g);g.connect(kaCtx.destination);o.start();}
+      if(kaCtx.state==='suspended')kaCtx.resume();
+    }catch(e){}
+    try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(x=>{kaWl=x;}).catch(()=>{});}catch(e){}
+  }else{
+    if(kaRel){kaRel();kaRel=null;}
+    if(kaCtx){try{kaCtx.close();}catch(e){}kaCtx=null;}
+    if(kaWl){kaWl.release().catch(()=>{});kaWl=null;}
+  }
+}
+document.addEventListener('visibilitychange',()=>{if(busy&&!document.hidden&&navigator.wakeLock)navigator.wakeLock.request('screen').then(x=>{kaWl=x;}).catch(()=>{});});
+
+/* ---------- unduh (WAV langsung, MP3 lewat lamejs dari cdnjs) ---------- */
+let lameP=null;
+function loadLame(){
+  if(window.lamejs)return Promise.resolve();
+  return lameP||(lameP=new Promise((res,rej)=>{
+    const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
+    s.onload=res;s.onerror=()=>{lameP=null;rej(fail('eMp3'));};document.head.appendChild(s);
+  }));
+}
+async function mp3(chs,sr){
+  await loadLame();
+  const c=chs.length,enc=new lamejs.Mp3Encoder(c,sr,192),out=[],B=1152;
+  const I=chs.map(a=>{const r=new Int16Array(a.length);for(let i=0;i<a.length;i++){const s=clamp(a[i],-1,1);r[i]=s<0?s*32768:s*32767;}return r;});
+  const n=I[0].length;
+  for(let i=0,k=0;i<n;i+=B,k++){
+    const l=I[0].subarray(i,i+B),b=c>1?enc.encodeBuffer(l,I[1].subarray(i,i+B)):enc.encodeBuffer(l);
+    if(b.length)out.push(new Uint8Array(b));
+    if(k%200===0){setStat('enc',i/n);await tick();}
+  }
+  const f=enc.flush();if(f.length)out.push(new Uint8Array(f));
+  return new Blob(out,{type:'audio/mpeg'});
+}
+function save(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+async function dl(kind){
+  if(busy||!R)return;
+  busy=true;lock(true);keepAlive(true);
+  try{
+    const f=$('fmt').value;let blob=blobs[kind];
+    if(f==='mp3')blob=await mp3(kind==='music'?R.music:R.vocal,R.sr);
+    save(blob,base()+(kind==='music'?'_musik.':'_suara.')+f);
+  }catch(e){toast(errMsg(e));}
+  finally{keepAlive(false);busy=false;lock(false);$('stx').textContent=t('done');$('pb').className='';$('pb').style.width='100%';}
+}
+$('dm').onclick=()=>dl('music');
+$('dv').onclick=()=>dl('voice');
+try{const sv=localStorage.getItem('sekat_mv');if(sv){$('tok').value=sv;$('rem').checked=true;}}catch(e){}
+apply();
+</script>
+</body>
+</html>

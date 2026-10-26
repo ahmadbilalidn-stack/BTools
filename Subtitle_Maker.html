@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Subtitle Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&family=Poppins:wght@400;700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&family=Caveat:wght@400;700&family=Space+Mono:wght@400;700&family=Anton&family=Bebas+Neue&family=Pacifico&family=Oswald:wght@400;700&family=Bangers&family=Lobster&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="Favicon.png">
+<style>
+:root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.45 'Instrument Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--ln)}
+.logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.tag{color:var(--mu);font-size:12px}
+.drop{min-height:calc(100vh - 54px);display:grid;place-items:center;align-content:center;gap:28px;padding:24px}
+.dz{display:block;width:min(720px,100%);padding:72px 32px;border:2px dashed #3c4756;border-radius:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dz.over,.dz:hover{border-color:var(--ac);background:#1a2028}
+.dz h1{font:800 clamp(30px,5.5vw,52px)/1.02 'Bricolage Grotesque',sans-serif;margin:0 0 14px;letter-spacing:-.03em;text-shadow:0 0 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000}
+.dz p{color:var(--mu);margin:0 auto 28px;max-width:46ch}
+.ws{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:calc(100vh - 54px)}
+.stage{padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.cvwrap{flex:1;min-height:200px;display:grid;place-items:center;background:#000;border:1px solid var(--ln);border-radius:8px;overflow:hidden}
+canvas{max-width:100%;max-height:calc(100vh - 54px - 150px);cursor:grab;touch-action:none;display:block}
+canvas:active{cursor:grabbing}
+.bar{display:flex;align-items:center;gap:12px}
+.seekbox{position:relative;flex:1;padding:6px 0 10px}
+.seekbox input{width:100%;margin:0}
+.marks{position:absolute;left:0;right:0;bottom:2px;height:4px}
+.marks i{position:absolute;top:0;height:100%;min-width:2px;background:var(--ac);opacity:.65;border-radius:1px}
+input[type=range]{accent-color:var(--ac)}
+.hint{display:flex;gap:16px;align-items:center;color:var(--mu);font-size:12px;flex-wrap:wrap}
+.lnk{background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit;padding:0}
+.btn{font:600 13px 'Instrument Sans',sans-serif;border:1px solid #435063;background:#252d38;color:var(--ink);padding:9px 14px;border-radius:6px;cursor:pointer}
+.btn:hover:not(:disabled){border-color:var(--ac)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.btn.sm{padding:6px 10px;font-size:12px}
+.wide{width:100%}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.side{border-left:1px solid var(--ln);background:var(--pn);overflow:auto;padding:4px 18px 24px}
+.side section{padding:16px 0;border-bottom:1px solid var(--ln);display:flex;flex-direction:column;gap:10px}
+h2{margin:0;font:600 15px 'Instrument Sans',sans-serif;display:flex;align-items:center;gap:8px}
+h2 i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--ac);color:var(--ai);display:grid;place-items:center;font-size:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu)}
+select{background:#12161c;color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px;font:inherit}
+input[type=password]{background:#12161c;color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px;font:inherit}
+.note a{color:var(--ink)}
+input[type=color]{width:100%;height:32px;border:1px solid var(--ln);border-radius:6px;background:#12161c;padding:2px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label.chk{flex-direction:row;align-items:center;gap:6px;color:var(--ink)}
+.lbl{font-size:12px;color:var(--mu)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:600 12px 'Instrument Sans',sans-serif;padding:6px 11px;border-radius:99px;border:1px solid #435063;background:transparent;color:var(--ink);cursor:pointer}
+.chips button.on{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.stat{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mu)}
+.pbar{height:4px;background:#2b3440;border-radius:2px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--ac);width:0}
+.pbar i.ind{width:35%;animation:sl 1.1s ease-in-out infinite alternate}
+@keyframes sl{to{transform:translateX(185%)}}
+@media (prefers-reduced-motion:reduce){.pbar i.ind{animation:none;width:100%}}
+.cues{position:relative;max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.cue{display:grid;grid-template-columns:50px 1fr 24px;gap:6px;align-items:center;padding:3px;border-radius:5px}
+.cue.on{background:#2c2a1c;outline:1px solid #6b5a1c}
+.cue .t{font:12px 'Instrument Sans',sans-serif;background:none;border:0;color:var(--mu);cursor:pointer;text-align:left}
+.cue input{background:transparent;border:1px solid transparent;color:var(--ink);font:inherit;padding:4px 6px;border-radius:4px;width:100%}
+.cue input:focus{border-color:var(--ac);outline:0;background:#12161c}
+.cue .x{background:none;border:0;color:var(--mu);cursor:pointer;font-size:16px}
+.mute,.note{color:var(--mu);font-size:12px;margin:0}
+#ovl{position:fixed;inset:0;background:rgba(10,13,18,.82);display:grid;place-items:center;z-index:9}
+.card{background:var(--pn);border:1px solid var(--ln);padding:24px;border-radius:12px;width:min(380px,90vw);display:flex;flex-direction:column;gap:12px}
+.card h3{margin:0;font-size:16px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#161b22;padding:9px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;max-width:90vw}
+#toast.on{opacity:1}
+#vid{position:fixed;left:-9999px;top:0;width:2px;height:2px}
+@media (max-width:900px){.ws{grid-template-columns:1fr;height:auto}.side{border-left:0;border-top:1px solid var(--ln)}canvas{max-height:60vh}.tag{display:none}}
+.ico{width:64px;height:64px;color:var(--ac);margin-bottom:18px}
+.fmts{display:block;margin-top:16px;color:var(--mu);font-size:12px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(720px,100%)}
+.how div{padding:14px 16px;border:1px solid var(--ln);border-radius:10px;background:var(--pn)}
+.how b{display:block;font-weight:600;margin-bottom:3px}
+.how span{color:var(--mu);font-size:12px}
+@media (max-width:900px){.how{grid-template-columns:1fr}}
+
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.home{display:inline-grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--ln);border-radius:8px;color:var(--ink);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+.home:hover{border-color:var(--ac);color:var(--ac)}
+.home svg{width:18px;height:18px}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb,#3c4756);border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--ac);border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:active{background:#d9ab22;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+textarea::-webkit-scrollbar-track{background:var(--in,#12161c);border-radius:0 6px 6px 0}
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin;scrollbar-color:var(--sb,#566376) transparent}}
+html[data-theme=light]{color-scheme:light;--bg:#f6f3ec;--pn:#ffffff;--ln:#ddd6c6;--ink:#1d232c;--mu:#5f6a77;--in:#faf8f3;--sb:#c4bcaa}
+html[data-theme=light] .btn:not(.pri){background:#ece7da;border-color:#cfc7b4}
+html[data-theme=light] .chips button:not(.on),html[data-theme=light] .chip:not(.on){border-color:#cfc7b4}
+html[data-theme=light] select,html[data-theme=light] input[type=password],html[data-theme=light] input[type=number],html[data-theme=light] input[type=text],html[data-theme=light] input[type=color],html[data-theme=light] textarea{background:var(--in)}
+html[data-theme=light] .dz{border-color:#bfb7a3}
+html[data-theme=light] .dz.over,html[data-theme=light] .dz:hover{background:#efeadd}
+html[data-theme=light] .dz h1{text-shadow:none}
+html[data-theme=light] .pbar{background:#e2dccd}
+html[data-theme=light] .cue.on{background:#fbf1c9;outline-color:#d9b84a}
+html[data-theme=light] .cue input:focus{background:var(--in)}
+html[data-theme=light] #toast{color:#f6f3ec}
+</style>
+<script>(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();</script>
+</head>
+<body>
+<header class="top"><div class="brand"><a class="home" href="index.html" title="Beranda" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h4.5v-5.5h4v5.5h4.5V10"/></svg></a><div class="logo">Subtitle Maker</div></div><span class="tag">Videomu tetap di perangkatmu. Mode online hanya mengirim suaranya ke Groq</span></header>
+<main>
+<section id="drop" class="drop">
+  <label class="dz" id="dz" for="pick">
+    <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="5" y="6" width="54" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M27 16l14 9-14 9z" fill="currentColor"/><rect x="14" y="50" width="36" height="4" rx="2" fill="currentColor"/><rect x="21" y="57" width="22" height="3" rx="1.5" fill="currentColor" opacity=".6"/></svg>
+    <h1>Taruh videomu di sini</h1>
+    <p>Subtitle Maker mendengarkan suara di videomu, menuliskannya jadi subtitle, lalu kamu atur gaya dan posisinya sebelum diekspor.</p>
+    <span class="btn pri">Pilih video</span>
+    <span class="fmts">MP4, WebM, atau MOV. Bisa juga diseret ke mana saja di halaman ini.</span>
+  </label>
+  <input type="file" id="pick" accept="video/*" hidden>
+  <div class="how">
+    <div><b>Subtitle otomatis</b><span>Suara di videomu dikenali dan ditulis per kata, lengkap dengan waktunya.</span></div>
+    <div><b>Atur tampilannya</b><span>Pilih font, warna, animasi sorotan, dan kotak latar. Teks bisa digeser langsung.</span></div>
+    <div><b>Ekspor atau unduh .srt</b><span>Simpan video yang sudah bersubtitle, atau ambil file .srt saja.</span></div>
+  </div>
+</section>
+
+<div id="ws" class="ws" hidden>
+  <div class="stage">
+    <div class="cvwrap"><canvas id="cv" width="1280" height="720"></canvas></div>
+    <div class="bar">
+      <button id="play" class="btn" style="min-width:74px">Putar</button>
+      <span id="tc">0:00.0</span>
+      <div class="seekbox"><div id="marks" class="marks"></div><input type="range" id="seek" min="0" max="1" step="0.01" value="0" aria-label="Posisi video"></div>
+      <span id="td">0:00.0</span>
+    </div>
+    <div class="hint">
+      <span>Seret di dalam video untuk memindahkan teks. Spasi untuk putar atau jeda.</span>
+      <button id="rpos" class="lnk">Reset posisi teks</button>
+      <button id="swap" class="lnk">Ganti video</button>
+    </div>
+  </div>
+
+  <aside class="side" id="side">
+    <section>
+      <h2><i>1</i>Buat subtitle</h2>
+      <label>Mesin
+        <select id="engine"><option value="online">Online (Groq, cepat)</option><option value="local">Lokal (di browser)</option></select>
+      </label>
+      <label id="keyrow">API key Groq
+        <input type="password" id="gkey" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+        <span class="note">Gratis di <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com</a>. Disimpan hanya di browser ini.</span>
+      </label>
+      <label id="modrow">Model Whisper (lokal)
+        <select id="model">
+          <option value="Xenova/whisper-tiny">Tiny (tercepat)</option>
+          <option value="Xenova/whisper-base" selected>Base (seimbang)</option>
+          <option value="Xenova/whisper-small">Small (paling akurat, unduhan besar)</option>
+        </select>
+      </label>
+      <div class="row2">
+        <label>Bahasa suara
+          <select id="lang"><option value="">Deteksi otomatis</option><option value="indonesian">Indonesia</option><option value="english">Inggris</option></select>
+        </label>
+        <label>Kata per baris
+          <select id="wpl"><option>3</option><option>4</option><option>5</option><option selected>6</option><option>8</option><option>10</option></select>
+        </label>
+      </div>
+      <button id="gen" class="btn pri wide">Buat subtitle otomatis</button>
+      <div id="stat" class="stat" hidden><span id="stx"></span><div class="pbar"><i id="pb"></i></div></div>
+      <div id="cues" class="cues"></div>
+      <label class="chk"><input type="checkbox" id="snd" checked>Tampilkan label suara (Musik, Tepuk tangan)</label>
+      <div class="row"><button id="srt" class="btn sm" disabled>Unduh .srt</button><span id="cnt" class="mute"></span></div>
+    </section>
+
+    <section>
+      <h2><i>2</i>Gaya dan animasi</h2>
+      <label>Font<select id="font"></select></label>
+      <label>Ukuran teks<input type="range" id="size" min="3" max="12" step="0.5" value="6"></label>
+      <div class="row2">
+        <label>Warna teks<input type="color" id="color" value="#ffffff"></label>
+        <label>Warna sorotan<input type="color" id="hl" value="#f4c430"></label>
+      </div>
+      <div class="row2">
+        <label>Warna garis tepi<input type="color" id="stc" value="#000000"></label>
+        <label>Rata teks<select id="al"><option value="center">Tengah</option><option value="left">Kiri</option><option value="right">Kanan</option></select></label>
+      </div>
+      <label>Tebal garis tepi<input type="range" id="stroke" min="0" max="14" step="1" value="7"></label>
+      <label>Bayangan<input type="range" id="sh" min="0" max="40" value="0"></label>
+      <label>Jarak huruf<input type="range" id="ls" min="-5" max="30" value="0"></label>
+      <label>Jarak baris<input type="range" id="lh" min="0.9" max="2" step="0.05" value="1.25"></label>
+      <label>Lebar maksimal teks<input type="range" id="mw" min="40" max="95" value="84"></label>
+      <label>Transparansi teks<input type="range" id="op" min="20" max="100" value="100"></label>
+      <label>Rotasi teks<input type="range" id="rot" min="-15" max="15" step="1" value="0"></label>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="bold" checked>Tebal</label>
+        <label class="chk"><input type="checkbox" id="it">Miring</label>
+        <label class="chk"><input type="checkbox" id="upper">Huruf besar</label>
+        <label class="chk"><input type="checkbox" id="bg">Kotak latar</label>
+      </div>
+      <div class="row2">
+        <label>Warna kotak latar<input type="color" id="bgc" value="#000000"></label>
+        <label>Bentuk kotak<select id="bgs"><option value="round">Membulat</option><option value="sq">Tajam</option><option value="pill">Kapsul</option><option value="line">Per baris</option><option value="out">Garis tepi</option></select></label>
+      </div>
+      <label>Opasitas kotak latar<input type="range" id="bgo" min="10" max="100" value="60"></label>
+      <label>Jarak dalam kotak<input type="range" id="bgp" min="0" max="100" value="35"></label>
+      <label>Kecepatan animasi<input type="range" id="spd" min="0.5" max="2" step="0.1" value="1"></label>
+      <div class="lbl">Animasi teks</div>
+      <div id="anims" class="chips"></div>
+    </section>
+
+    <section>
+      <h2><i>3</i>Ekspor video</h2>
+      <div class="row2">
+        <label>Format<select id="fmt"></select></label>
+        <label>Resolusi<select id="qual"><option value="720">720p</option><option value="1080" selected>1080p</option><option value="0">Ukuran asli</option></select></label>
+      </div>
+      <div class="row"><button id="dir" class="btn sm">Pilih folder simpan</button><span id="dirn" class="mute">Belum dipilih, hasil diunduh biasa</span></div>
+      <label class="chk"><input type="checkbox" id="hear" checked>Putar suara saat ekspor (membantu ekspor tetap jalan saat pindah tab)</label>
+      <button id="exp" class="btn pri wide" disabled>Ekspor video</button>
+      <p class="note">Video direkam real-time selama durasinya. Kamu boleh pindah tab, tapi jangan tutup tab ini. Kalau hasilnya macet, pindahkan tab ini ke jendela sendiri.</p>
+    </section>
+  </aside>
+</div>
+</main>
+
+<video id="vid" playsinline preload="auto"></video>
+<div id="ovl" hidden><div class="card"><h3>Mengekspor video</h3><p class="mute">Kamu boleh pindah tab, tapi jangan tutup tab ini.</p><div class="pbar"><i id="opb"></i></div><button id="ocx" class="btn sm">Batalkan</button></div></div>
+<div id="toast" role="status"></div>
+
+<script id="wsrc" type="text/plain">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2';
+env.allowLocalModels = false;
+const GPU = {
+  'Xenova/whisper-tiny': 'onnx-community/whisper-tiny_timestamped',
+  'Xenova/whisper-base': 'onnx-community/whisper-base_timestamped',
+  'Xenova/whisper-small': 'onnx-community/whisper-small_timestamped'
+};
+let asr = null, cur = '';
+const cb = p => self.postMessage({ type: 'progress', p });
+async function load(key, id, opts) {
+  if (cur === key) return;
+  cur = ''; asr = null;
+  asr = await pipeline('automatic-speech-recognition', id, { ...opts, progress_callback: cb });
+  cur = key;
+}
+async function gpuRun(m) {
+  const cfgs = [{ encoder_model: 'fp32', decoder_model_merged: 'q4' }];
+  if (!/small$/.test(m.model)) cfgs.push({ encoder_model: 'fp32', decoder_model_merged: 'fp32' });
+  let err = null;
+  for (const dtype of cfgs) {
+    try { await load('gpu|' + m.model + '|' + dtype.decoder_model_merged, GPU[m.model], { device: 'webgpu', dtype }); err = null; break; }
+    catch (e) { err = e; }
+  }
+  if (err) throw err;
+  self.postMessage({ type: 'status', dev: 'webgpu' });
+  const out = await asr(m.audio, { chunk_length_s: 30, stride_length_s: 5, task: 'transcribe', language: m.lang || undefined, return_timestamps: 'word' });
+  return { chunks: out.chunks || [], word: true };
+}
+async function wasmRun(m) {
+  await load('wasm|' + m.model, m.model, {});
+  self.postMessage({ type: 'status', dev: 'wasm' });
+  const o = { chunk_length_s: 30, stride_length_s: 5, task: 'transcribe', language: m.lang || undefined };
+  let out, word = true;
+  try { out = await asr(m.audio, { ...o, return_timestamps: 'word' }); }
+  catch (err) { word = false; out = await asr(m.audio, { ...o, return_timestamps: true }); }
+  return { chunks: out.chunks || [], word };
+}
+self.onmessage = async (e) => {
+  const m = e.data;
+  if (m.type !== 'run') return;
+  try {
+    let res = null;
+    if (self.navigator && self.navigator.gpu && GPU[m.model]) {
+      try { res = await gpuRun(m); } catch (err) { self.postMessage({ type: 'fallback' }); }
+    }
+    if (!res) res = await wasmRun(m);
+    self.postMessage({ type: 'done', chunks: res.chunks, word: res.word });
+  } catch (err) {
+    self.postMessage({ type: 'error', msg: String((err && err.message) || err) });
+  }
+};
+</script>
+
+<script>
+/*PURE*/
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const FONTS=[['Poppins',1],['Montserrat',1],['Playfair Display',1],['Caveat',1],['Space Mono',1],['Anton',0],['Bebas Neue',0],['Pacifico',0],['Oswald',1],['Bangers',0],['Lobster',0],['Permanent Marker',0]];
+const FB=Object.fromEntries(FONTS);
+const st={anim:'karaoke',font:'Poppins',size:6,color:'#ffffff',hl:'#f4c430',stroke:7,bold:true,upper:false,bg:false,bgo:.6,stc:'#000000',it:false,ls:0,lh:1.25,sh:0,al:'center',mw:.84,op:1,spd:1,rot:0,bgc:'#000000',bgs:'round',bgp:35,snd:true};
+let pos={x:.5,y:.84};
+const back=k=>{const c=1.70158;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2)},ease=k=>1-Math.pow(1-k,3);
+const fmt=t=>{const ms=Math.round(t*10),m=Math.floor(ms/600),s=(ms%600)/10;return m+':'+s.toFixed(1).padStart(4,'0')};
+const srtT=t=>{const ms=Math.round(t*1000),p=(n,l=2)=>String(n).padStart(l,'0');return p(Math.floor(ms/3600000))+':'+p(Math.floor(ms%3600000/60000))+':'+p(Math.floor(ms%60000/1000))+','+p(ms%1000,3)};
+function rr(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h)}
+function toWords(chunks,word){
+  const out=[];
+  chunks.forEach(ch=>{
+    const txt=(ch.text||'').trim();if(!txt)return;
+    let s=(ch.timestamp&&ch.timestamp[0])||0,e=ch.timestamp&&ch.timestamp[1];
+    if(word){if(e==null||e<=s)e=s+.3;out.push({t:txt,s,e});}
+    else{if(e==null||e<=s)e=s+2;const tk=txt.split(/\s+/),d=(e-s)/tk.length;tk.forEach((t,j)=>out.push({t,s:s+j*d,e:s+(j+1)*d}));}
+  });
+  return fixGreetings(mergeTags(out));
+}
+/* label suara non-ucapan, salam, dan analisis audio */
+const OPEN=/^[\[\(\*♪♫]/,CLOSE=/[\]\)\*♪♫]/,LINGER=.35;
+function soundLabel(raw){
+  const c=raw.replace(/[\[\]\(\)\*♪♫]/g,'').trim(),l=c.toLowerCase(),note=/[♪♫]/.test(raw);
+  if(/silence|blank|hening|kosong|inaudible|no speech/.test(l)||(!l&&!note))return'';
+  if(/applau|clap|tepuk/.test(l))return'(Tepuk tangan)';
+  if(/laugh|tawa|giggle/.test(l))return'(Tertawa)';
+  if(/cheer|sorak/.test(l))return'(Sorak-sorai)';
+  if(note||/music|musik|lagu|song|sing|instrument/.test(l))return'(Musik)';
+  return'('+c+')';
+}
+function mergeTags(ws){
+  const out=[];
+  for(let i=0;i<ws.length;i++){
+    const w=ws[i];
+    if(!OPEN.test(w.t)){out.push(w);continue;}
+    let j=i,txt=w.t,closed=CLOSE.test(w.t.slice(1));
+    while(!closed&&j+1<ws.length&&j-i<7){j++;txt+=' '+ws[j].t;closed=CLOSE.test(ws[j].t);}
+    if(!closed){out.push(w);continue;}
+    const lab=soundLabel(txt);
+    if(lab)out.push({t:lab,s:w.s,e:ws[j].e,snd:true});
+    i=j;
+  }
+  return out;
+}
+function fixGreetings(ws){
+  const out=[],nd=x=>x?x.t.replace(/[\u064B-\u065F\u0670]/g,''):'';
+  for(let i=0;i<ws.length;i++){
+    const w=ws[i],n=ws[i+1];
+    if(/\u0648\u0639\u0644\u064a\u0643\u0645/.test(nd(w))&&/\u0633\u0644\u0627\u0645/.test(nd(n))){out.push({...w,t:'Waalaikumsalam',e:n.e});i++;}
+    else if(/\u0633\u0644\u0627\u0645/.test(nd(w))){let e=w.e;if(/\u0639\u0644\u064a\u0643\u0645/.test(nd(n))){e=n.e;i++;}out.push({...w,t:'Assalamualaikum',e});}
+    else out.push(w);
+  }
+  return out;
+}
+function envelope(a,sr=16000){
+  const w=sr/10,n=Math.ceil(a.length/w),env=new Float32Array(n),zc=new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const s0=Math.floor(i*w),e0=Math.min(a.length,Math.floor((i+1)*w));let s=0,z=0;
+    for(let j=s0;j<e0;j++){s+=a[j]*a[j];if(j>s0&&(a[j]>=0)!==(a[j-1]>=0))z++;}
+    const m=Math.max(1,e0-s0);env[i]=Math.sqrt(s/m);zc[i]=z/m;
+  }
+  return {env,zc};
+}
+function boost(a,sr=16000){
+  if(!a.length)return;
+  const win=Math.round(sr*.5),n=Math.ceil(a.length/win),g=new Float32Array(n+1);
+  for(let i=0;i<n;i++){
+    const e=Math.min(a.length,(i+1)*win);let s=0;
+    for(let j=i*win;j<e;j++)s+=a[j]*a[j];
+    const r=Math.sqrt(s/Math.max(1,e-i*win));g[i]=r<.003?1:clamp(.1/r,1,12);
+  }
+  g[n]=g[n-1];
+  for(let i=0;i<a.length;i++){const p=i/win,k=Math.floor(p),f=p-k;a[i]=clamp(a[i]*(g[k]*(1-f)+g[k+1]*f),-1,1);}
+}
+function refOf(env){const v=[...env].filter(x=>x>.003).sort((x,y)=>x-y);return v.length?v[Math.floor(v.length*.9)]:0;}
+const actThr=env=>Math.max(.006,.15*refOf(env));
+function speechEnd(env,thr,s,e){
+  const a=Math.floor(s*10),b=Math.min(env.length-1,Math.floor(e*10));
+  for(let i=b;i>=a;i--)if(env[i]>thr)return Math.max(s+.1,Math.min(e,(i+1)/10));
+  return Math.max(s+.1,Math.min(e,s+.3));
+}
+function dropSilent(ws,env){
+  if(!env)return ws;
+  return ws.filter(w=>{
+    if(w.snd)return true;
+    const a=Math.floor(w.s*10),b=Math.min(env.length-1,Math.floor(w.e*10));
+    if(a>b)return true;
+    let m=0;for(let i=a;i<=b;i++)if(env[i]>m)m=env[i];
+    return m>.004;
+  });
+}
+function soundGaps(an,ws,dur){
+  if(!an)return[];
+  const {env,zc}=an,n=env.length,thr=Math.max(.01,.25*refOf(env)),cov=new Uint8Array(n);
+  ws.forEach(w=>{for(let i=Math.max(0,Math.floor((w.s-.4)*10));i<=Math.min(n-1,Math.ceil((w.e+.4)*10));i++)cov[i]=1;});
+  const act=k=>!cov[k]&&env[k]>thr,out=[];
+  let i=0;
+  while(i<n){
+    if(!act(i)){i++;continue;}
+    let j=i,last=i,gap=0;
+    while(j<n){if(act(j)){last=j;gap=0;}else if(++gap>5)break;j++;}
+    if(last-i+1>=25){
+      let z=0;for(let k=i;k<=last;k++)z+=zc[k];z/=last-i+1;
+      out.push({t:z>.2?'(Tepuk tangan)':'(Musik)',s:i/10,e:Math.min(dur||1e9,(last+1)/10),snd:true});
+    }
+    i=last+1;
+  }
+  return out;
+}
+function buildCues(words,max,dur,env){
+  const out=[];let cur=[];
+  const flush=()=>{if(cur.length){out.push({start:cur[0].s,end:cur[cur.length-1].e,words:cur});cur=[];}};
+  words.forEach(w=>{
+    if(w.snd){flush();out.push({start:w.s,end:w.e,words:[w],snd:true});return;}
+    if(cur.length&&(w.s-cur[cur.length-1].e>.8||cur.length>=max))flush();
+    cur.push(w);
+    if(/[.!?…]$/.test(w.t)&&cur.length>=3)flush();
+  });
+  flush();
+  if(env){
+    const t2=Math.max(.005,.08*refOf(env));
+    for(let i=out.length-1;i>=0;i--){
+      const c=out[i];if(c.snd)continue;
+      const a=Math.floor(c.start*10),b=Math.min(env.length-1,Math.floor(c.end*10));
+      let k=a;while(k<=b&&env[k]<=t2)k++;
+      if(k>b){out.splice(i,1);continue;}
+      const on=Math.max(c.start,k/10);
+      c.start=on;c.words.forEach(w=>{if(w.s<on)w.s=on;if(w.e<w.s+.1)w.e=w.s+.1;});
+    }
+  }
+  const thr=env?actThr(env):0;
+  out.forEach((c,i)=>{
+    if(c.snd)return;
+    const l=c.words[c.words.length-1],e=env?speechEnd(env,thr,l.s,l.e):l.e;
+    const nx=out[i+1],lim=nx?nx.start:(dur||Infinity);
+    c.end=Math.max(e,Math.min(e+LINGER,lim));
+  });
+  return out;
+}
+function editCue(c,val){
+  const tk=val.trim().split(/\s+/).filter(Boolean);
+  if(!tk.length)return;
+  if(tk.length===c.words.length)tk.forEach((t,i)=>c.words[i].t=t);
+  else{const d=(c.end-c.start)/tk.length;c.words=tk.map((t,i)=>({t,s:c.start+i*d,e:c.start+(i+1)*d}));}
+}
+const lum=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255;};
+const rgba=(h,a)=>{const n=parseInt(h.slice(1),16);return'rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+','+a+')';};
+function drawSub(c,cue,t,W,H){
+  const fs=H*st.size/100,lh=fs*st.lh,maxW=W*st.mw,sp2=st.spd;
+  c.save();
+  c.font=(st.it?'italic ':'')+(FB[st.font]&&st.bold?700:400)+' '+fs+'px "'+st.font+'",sans-serif';
+  c.textAlign='left';c.textBaseline='middle';c.lineJoin='round';c.miterLimit=2;
+  if('letterSpacing' in c)c.letterSpacing=(fs*st.ls/100)+'px';
+  const sp=c.measureText(' ').width,ws=cue.words.map(w=>({t:st.upper?w.t.toUpperCase():w.t,s:w.s,e:w.e}));
+  const lines=[];let cur=[],cw=0;
+  ws.forEach(w=>{
+    w.w=c.measureText(w.t).width;
+    if(cur.length&&cw+sp+w.w>maxW){lines.push({it:cur,w:cw});cur=[];cw=0;}
+    cw+=(cur.length?sp:0)+w.w;cur.push(w);
+  });
+  if(cur.length)lines.push({it:cur,w:cw});
+  const bw=Math.max(...lines.map(l=>l.w)),bh=lines.length*lh;
+  const ox=ln=>st.al==='left'?-bw/2:st.al==='right'?bw/2-ln.w:-ln.w/2;
+  const el=t-cue.start,dur=Math.max(.3,cue.end-cue.start),k=clamp(el*sp2/.28,0,1);
+  let a=1,sc=1,sy=1,oy=0;
+  switch(st.anim){
+    case 'fade':a=k;break;
+    case 'pop':a=clamp(el*sp2/.12,0,1);sc=.6+.4*back(k);break;
+    case 'slide':a=k;oy=(1-ease(k))*fs*.9;break;
+    case 'zoom':a=k;sc=1.6-.6*ease(k);break;
+    case 'drop':a=clamp(el*sp2/.1,0,1);oy=(back(k)-1)*fs*2;break;
+    case 'flip':a=clamp(k*2,0,1);sy=Math.max(.001,ease(k));break;
+  }
+  c.translate(W*pos.x,H*pos.y+oy);c.rotate(st.rot*Math.PI/180);c.scale(sc,sc*sy);
+  if(st.bg){
+    c.globalAlpha=a;c.fillStyle=rgba(st.bgc,st.bgo);
+    const p=fs*st.bgp/100,rad=h=>st.bgs==='sq'?0:st.bgs==='pill'?h/2:fs*.25;
+    const box=(x,y,w,h)=>{rr(c,x,y,w,h,rad(h));if(st.bgs==='out'){c.lineWidth=Math.max(2,fs*.07);c.strokeStyle=rgba(st.bgc,Math.max(.5,st.bgo));c.stroke();}else c.fill();};
+    if(st.bgs==='line')lines.forEach((ln,li)=>box(ox(ln)-p,-bh/2+lh*li+lh*.04,ln.w+p*2,lh*.92));
+    else box(-bw/2-p,-bh/2-p*.4,bw+p*2,bh+p*.8);
+  }
+  let rem=Math.floor(ws.reduce((n,w)=>n+w.t.length+1,0)*clamp(el*sp2/(dur*.75),0,1)),wi=0;
+  lines.forEach((ln,li)=>{
+    let x=ox(ln);const y=-bh/2+lh*(li+.5);
+    ln.it.forEach(w=>{
+      let txt=w.t,col=st.color,al=a*st.op,s2=1,dy=0,hb=0,ul=0,gl=0;
+      const q=t-w.s,on=q>=0&&t<w.e,ix=wi++;
+      switch(st.anim){
+        case 'type':txt=w.t.slice(0,Math.max(0,rem));rem-=w.t.length+1;break;
+        case 'words':if(q<0)txt='';else{s2=.7+.3*back(clamp(q*sp2/.18,0,1));al*=clamp(q*sp2/.1,0,1);}break;
+        case 'rise':if(q<0)txt='';else{const r=clamp(q*sp2/.22,0,1);dy=(1-ease(r))*fs*.7;al*=r;}break;
+        case 'karaoke':if(on){col=st.hl;s2=1.1;}break;
+        case 'hlbox':if(on)hb=1;break;
+        case 'ul':if(on){col=st.hl;ul=clamp(q*sp2/.15,0,1);}break;
+        case 'fill':if(q>=0)col=st.hl;break;
+        case 'glow':if(on){col=st.hl;gl=1;s2=1.06;}break;
+        case 'neon':gl=1;if(on){col=st.hl;s2=1.06;}break;
+        case 'dim':if(q<0)al*=.35;else if(on){col=st.hl;s2=1.08;}break;
+        case 'bounce':if(on){col=st.hl;dy=-Math.sin(clamp(q*sp2/.3,0,1)*Math.PI)*fs*.28;}break;
+        case 'wave':dy=Math.sin(t*6*sp2+ix*.7)*fs*.1;if(on)col=st.hl;break;
+        case 'pulse':if(on){col=st.hl;s2=1+.18*Math.sin(clamp(q*sp2/.35,0,1)*Math.PI);}break;
+      }
+      if(txt){
+        c.save();c.globalAlpha=al;c.translate(x+w.w/2,y+dy);c.scale(s2,s2);
+        let ns=0;
+        if(hb){c.fillStyle=st.hl;rr(c,-w.w/2-fs*.14,-lh*.42,w.w+fs*.28,lh*.84,fs*.2);c.fill();col=lum(st.hl)>.55?'#111111':'#ffffff';ns=1;}
+        if(st.stroke>0&&!ns){
+          if(st.sh>0){c.shadowColor='rgba(0,0,0,.85)';c.shadowBlur=fs*st.sh/100;c.shadowOffsetY=fs*st.sh/250;}
+          c.lineWidth=fs*st.stroke/100*2;c.strokeStyle=st.stc;c.strokeText(txt,-w.w/2,0);
+          c.shadowColor='transparent';c.shadowBlur=0;c.shadowOffsetY=0;
+        }
+        if(gl){c.shadowColor=st.hl;c.shadowBlur=fs*.45;}
+        else if(st.sh>0&&(ns||!(st.stroke>0))){c.shadowColor='rgba(0,0,0,.85)';c.shadowBlur=fs*st.sh/100;c.shadowOffsetY=fs*st.sh/250;}
+        c.fillStyle=col;c.fillText(txt,-w.w/2,0);
+        if(ul){c.shadowColor='transparent';c.shadowBlur=0;c.fillStyle=st.hl;c.fillRect(-w.w/2,fs*.4,w.w*ul,Math.max(2,fs*.09));}
+        c.restore();
+      }
+      x+=w.w+sp;
+    });
+  });
+  c.restore();
+}
+/* transkripsi online (Groq) */
+function wavBlob(a,sr=16000){
+  const n=a.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){const x=clamp(a[i],-1,1);v.setInt16(44+i*2,x<0?x*0x8000:x*0x7fff,true);}
+  return new Blob([b],{type:'audio/wav'});
+}
+function splitPoints(total,env,max=600){
+  const pts=[0];let pos=0;
+  while(total-pos>max){
+    const hi=pos+max,lo=Math.max(pos+max*.5,hi-30);let best=hi,bv=Infinity;
+    if(env)for(let i=Math.floor(lo*10);i<=Math.min(env.length-1,Math.floor(hi*10));i++)if(env[i]<bv){bv=env[i];best=i/10;}
+    pts.push(best);pos=best;
+  }
+  pts.push(total);return pts;
+}
+async function groqRun(a,key,lang,env){
+  const sr=16000,pts=splitPoints(a.length/sr,env),words=[],segs=[];let allWords=true;
+  for(let i=0;i<pts.length-1;i++){
+    stat('Mengirim bagian '+(i+1)+' dari '+(pts.length-1)+' ke Groq',null);
+    const f=new FormData();
+    f.append('file',wavBlob(a.subarray(Math.round(pts[i]*sr),Math.round(pts[i+1]*sr)),sr),'audio.wav');
+    f.append('model','whisper-large-v3-turbo');f.append('response_format','verbose_json');
+    f.append('timestamp_granularities[]','word');f.append('timestamp_granularities[]','segment');f.append('temperature','0');
+    if(lang)f.append('language',lang);
+    let r;
+    try{r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+key},body:f});}
+    catch(e){throw new Error('Tidak bisa terhubung ke Groq. Periksa koneksi internetmu.');}
+    if(!r.ok){
+      let m='';try{m=(await r.json()).error.message;}catch(e){}
+      throw new Error(r.status===401?'API key Groq ditolak. Periksa lagi key-nya.':r.status===429?'Batas pemakaian Groq tercapai. Tunggu beberapa menit lalu coba lagi.':'Groq menolak permintaan ('+r.status+'). '+m);
+    }
+    const d=await r.json(),off=pts[i];
+    if(Array.isArray(d.words))d.words.forEach(w=>words.push({text:' '+w.word,timestamp:[w.start+off,w.end+off]}));else allWords=false;
+    (d.segments||[]).forEach(x=>segs.push({text:x.text,timestamp:[x.start+off,x.end+off]}));
+  }
+  return allWords?{chunks:words,word:true}:{chunks:segs,word:false};
+}
+/*ENDPURE*/
+
+const $=id=>document.getElementById(id);
+const ANIMS=[['none','Statis'],['fade','Memudar'],['pop','Membal'],['slide','Naik'],['zoom','Zoom masuk'],['drop','Jatuh'],['flip','Membuka'],['type','Mesin ketik'],['words','Kata demi kata'],['rise','Kata naik'],['karaoke','Sorot kata'],['hlbox','Kotak sorot'],['ul','Garis bawah'],['fill','Isi warna'],['glow','Bercahaya'],['neon','Neon'],['dim','Fokus kata'],['bounce','Melompat'],['wave','Gelombang'],['pulse','Denyut']];
+const SAMPLE={start:0,end:2.5,words:['Contoh','teks','subtitle','di','sini'].map((t,i)=>({t,s:i*.5,e:i*.5+.5}))};
+const cv=$('cv'),g=cv.getContext('2d'),vid=$('vid');
+let file=null,url=null,cues=[],drag=null,exporting=false,busy=false,worker=null,dirH=null,actx=null,asrc=null,adst=null,endRes=null,cancelled=false,lastAct=-2,tmr=0,fmtOK=false,soundEnv=null;
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tmr);tmr=setTimeout(()=>t.classList.remove('on'),3500);}
+function stat(msg,pct){$('stat').hidden=false;$('stx').textContent=msg;const pb=$('pb');if(pct==null){pb.className='ind';pb.style.width='';}else{pb.className='';pb.style.width=pct+'%';}}
+function fail(msg){busy=false;keepAlive(false);ping('Gagal membuat subtitle');$('gen').disabled=false;stat(msg,0);}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* tetap jalan saat pindah tab */
+const T0=document.title;let lockRel=null,tick=null;
+function ping(m){if(document.hidden)document.title='✓ '+m;}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)document.title=T0;});
+function keepAlive(on){
+  if(on&&navigator.locks&&!lockRel){
+    navigator.locks.request('takarir-job',{mode:'shared'},()=>new Promise(r=>{lockRel=r;})).catch(()=>{});
+  }else if(!on&&lockRel){lockRel();lockRel=null;}
+}
+function startTick(){
+  try{
+    const u=URL.createObjectURL(new Blob(['setInterval(()=>postMessage(0),33)'],{type:'text/javascript'}));
+    tick=new Worker(u);tick.onmessage=()=>{if(document.hidden)frame();};
+  }catch(e){}
+}
+function stopTick(){if(tick){tick.terminate();tick=null;}}
+
+/* ---------- UI gaya ---------- */
+FONTS.forEach(([n])=>$('font').add(new Option(n,n)));
+ANIMS.forEach(([k,l])=>{const b=document.createElement('button');b.textContent=l;b.dataset.a=k;if(k===st.anim)b.className='on';b.onclick=()=>{st.anim=k;[...$('anims').children].forEach(x=>x.classList.toggle('on',x===b));};$('anims').append(b);});
+function readStyle(){st.font=$('font').value;st.size=+$('size').value;st.color=$('color').value;st.hl=$('hl').value;st.stroke=+$('stroke').value;st.bold=$('bold').checked;st.upper=$('upper').checked;st.bg=$('bg').checked;st.bgo=+$('bgo').value/100;st.stc=$('stc').value;st.it=$('it').checked;st.ls=+$('ls').value;st.lh=+$('lh').value;st.sh=+$('sh').value;st.al=$('al').value;st.mw=+$('mw').value/100;st.op=+$('op').value/100;st.spd=+$('spd').value;st.rot=+$('rot').value;st.bgc=$('bgc').value;st.bgs=$('bgs').value;st.bgp=+$('bgp').value;st.snd=$('snd').checked;}
+function ensureFont(){return Promise.all([400,700].map(w=>document.fonts.load(w+' 40px "'+st.font+'"'))).catch(()=>{});}
+$('side').addEventListener('input',e=>{readStyle();if(e.target.id==='font')ensureFont();});
+readStyle();ensureFont();
+
+/* ---------- video ---------- */
+function initAudio(){
+  if(actx)return;
+  actx=new (window.AudioContext||window.webkitAudioContext)();
+  asrc=actx.createMediaElementSource(vid);adst=actx.createMediaStreamDestination();
+  asrc.connect(actx.destination);asrc.connect(adst);
+}
+function setSize(){
+  const vw=vid.videoWidth,vh=vid.videoHeight;if(!vw)return;
+  const target=+$('qual').value||1e9,s=Math.min(1,target/vh);
+  cv.width=Math.max(2,Math.round(vw*s/2)*2);cv.height=Math.max(2,Math.round(vh*s/2)*2);
+}
+function loadFile(f){
+  if(!f||!/^video\//.test(f.type))return toast('File itu bukan video. Pilih file MP4, WebM, atau MOV.');
+  if(url)URL.revokeObjectURL(url);
+  file=f;url=URL.createObjectURL(f);cues=[];initAudio();
+  vid.src=url;$('drop').hidden=true;$('ws').hidden=false;$('stat').hidden=true;renderCues();
+}
+vid.onloadedmetadata=()=>{$('seek').max=vid.duration;$('td').textContent=fmt(vid.duration);setSize();renderMarks();};
+vid.onerror=()=>{toast('Browser tidak bisa memutar video ini. Coba ubah ke MP4 (H.264).');$('drop').hidden=false;$('ws').hidden=true;};
+vid.onplay=()=>$('play').textContent='Jeda';
+vid.onpause=()=>$('play').textContent='Putar';
+$('qual').onchange=setSize;
+$('pick').onchange=e=>{loadFile(e.target.files[0]);e.target.value='';};
+$('swap').onclick=()=>$('pick').click();
+document.addEventListener('dragover',e=>{e.preventDefault();$('dz').classList.add('over');});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)$('dz').classList.remove('over');});
+document.addEventListener('drop',e=>{e.preventDefault();$('dz').classList.remove('over');loadFile(e.dataTransfer.files[0]);});
+function togglePlay(){if(exporting||!file)return;if(actx)actx.resume();if(vid.paused)vid.play().catch(()=>{});else vid.pause();}
+$('play').onclick=togglePlay;
+$('seek').oninput=()=>{vid.currentTime=+$('seek').value;};
+$('rpos').onclick=()=>{pos={x:.5,y:.84};};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();togglePlay();}});
+
+/* ---------- geser teks ---------- */
+cv.addEventListener('pointerdown',e=>{if(exporting)return;cv.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,px:pos.x,py:pos.y,moved:false};});
+cv.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const r=cv.getBoundingClientRect(),dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;
+  if(drag.moved){const nx=clamp(drag.px+dx/r.width,.05,.95);pos.x=Math.abs(nx-.5)<.02?.5:nx;pos.y=clamp(drag.py+dy/r.height,.05,.95);}
+});
+cv.addEventListener('pointerup',()=>{if(drag&&!drag.moved)togglePlay();drag=null;});
+cv.addEventListener('pointercancel',()=>{drag=null;});
+
+/* ---------- daftar subtitle ---------- */
+function renderMarks(){
+  const m=$('marks'),d=vid.duration;m.textContent='';
+  if(!d||!isFinite(d))return;
+  cues.forEach(c=>{const i=document.createElement('i');i.style.left=c.start/d*100+'%';i.style.width=(c.end-c.start)/d*100+'%';m.append(i);});
+}
+function renderCues(){
+  const box=$('cues');box.textContent='';
+  cues.forEach(c=>{
+    const r=document.createElement('div');r.className='cue';
+    const b=document.createElement('button');b.className='t';b.textContent=fmt(c.start);b.onclick=()=>{vid.currentTime=c.start+.02;};
+    const inp=document.createElement('input');inp.value=c.words.map(w=>w.t).join(' ');inp.oninput=()=>editCue(c,inp.value);
+    const x=document.createElement('button');x.className='x';x.textContent='×';x.title='Hapus baris';x.onclick=()=>{cues.splice(cues.indexOf(c),1);renderCues();};
+    r.append(b,inp,x);box.append(r);
+  });
+  lastAct=-2;renderMarks();
+  $('srt').disabled=!cues.length;$('exp').disabled=!cues.length||!fmtOK;
+  $('cnt').textContent=cues.length?cues.length+' baris':'';
+}
+function mark(act){
+  const box=$('cues'),rows=[...box.children];
+  rows.forEach(r=>r.classList.remove('on'));
+  const r=rows[act];
+  if(r){r.classList.add('on');if(!vid.paused)box.scrollTop=r.offsetTop-box.clientHeight/2;}
+}
+$('srt').onclick=()=>{
+  const t=cues.filter(c=>st.snd||!c.snd).map((c,i)=>(i+1)+'\n'+srtT(c.start)+' --> '+srtT(c.end)+'\n'+c.words.map(w=>w.t).join(' ')+'\n').join('\n');
+  save(new Blob([t],{type:'text/plain'}),baseName()+'.srt');
+};
+
+/* ---------- Whisper ---------- */
+async function getAudio(f){
+  const buf=await f.arrayBuffer();
+  const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
+  let ab;try{ab=await ac.decodeAudioData(buf);}finally{ac.close();}
+  const n=ab.length,out=new Float32Array(n);
+  for(let c=0;c<ab.numberOfChannels;c++){const d=ab.getChannelData(c);for(let i=0;i<n;i++)out[i]+=d[i]/ab.numberOfChannels;}
+  soundEnv=envelope(out);boost(out);
+  return out;
+}
+function mkWorker(){
+  const u=URL.createObjectURL(new Blob([$('wsrc').textContent],{type:'text/javascript'}));
+  worker=new Worker(u,{type:'module'});
+  worker.onmessage=e=>{
+    const m=e.data;
+    if(m.type==='progress'){const p=m.p;if(p.status==='progress')stat('Mengunduh model, '+Math.round(p.progress)+'%',p.progress);else if(p.status==='ready')stat('Menyiapkan model',null);}
+    else if(m.type==='fallback')stat('GPU tidak bisa dipakai, beralih ke CPU',null);
+    else if(m.type==='status')stat('Mentranskripsi suara'+(m.dev==='webgpu'?' memakai GPU':'')+'. Ini bisa memakan beberapa menit.',null);
+    else if(m.type==='done')finish(m);
+    else if(m.type==='error')fail('Gagal membuat subtitle: '+m.msg);
+  };
+  worker.onerror=()=>{worker=null;fail('Mesin Whisper gagal dimuat. Pastikan internet aktif saat pertama kali, lalu coba lagi.');};
+}
+function finish(m){keepAlive(false);ping('Subtitle selesai');
+  busy=false;$('gen').disabled=false;
+  const an=soundEnv;
+  let words=dropSilent(toWords(m.chunks,m.word),an&&an.env);
+  words=words.concat(soundGaps(an,words,vid.duration)).sort((a,b)=>a.s-b.s);
+  if(!words.length)return stat('Tidak ada ucapan atau suara yang terdeteksi di video ini.',0);
+  cues=buildCues(words,+$('wpl').value,vid.duration,an&&an.env);
+  renderCues();stat('Selesai: '+cues.length+' baris subtitle. Klik teks di daftar untuk memperbaiki.',100);
+}
+$('gen').onclick=async()=>{
+  if(!file||busy)return;
+  const online=$('engine').value==='online',key=$('gkey').value.trim();
+  if(online&&!key){toast('Isi API key Groq dulu. Daftarnya gratis di console.groq.com.');$('gkey').focus();return;}
+  busy=true;keepAlive(true);$('gen').disabled=true;stat('Membaca audio dari video',null);
+  let a;
+  try{a=await getAudio(file);}catch(e){return fail('Audio tidak terbaca. Pastikan videonya punya suara dan formatnya didukung browser.');}
+  if(online){
+    try{const r=await groqRun(a,key,{indonesian:'id',english:'en'}[$('lang').value]||'',soundEnv&&soundEnv.env);finish(r);}
+    catch(e){fail(e.message);}
+    return;
+  }
+  if(!worker)mkWorker();
+  stat('Menyiapkan model',null);
+  worker.postMessage({type:'run',audio:a,model:$('model').value,lang:$('lang').value},[a.buffer]);
+};
+function syncEngine(){
+  const on=$('engine').value==='online';
+  $('keyrow').hidden=!on;$('modrow').hidden=on;
+  try{localStorage.setItem('tk_engine',$('engine').value);}catch(e){}
+}
+try{const e=localStorage.getItem('tk_engine');if(e)$('engine').value=e;$('gkey').value=localStorage.getItem('tk_key')||'';}catch(e){}
+$('engine').onchange=syncEngine;
+$('gkey').oninput=()=>{try{localStorage.setItem('tk_key',$('gkey').value.trim());}catch(e){}};
+syncEngine();
+
+/* ---------- ekspor ---------- */
+const FM=[['video/mp4;codecs=avc1.42E01E,mp4a.40.2','MP4 (H.264)','mp4'],['video/mp4','MP4','mp4'],['video/webm;codecs=vp9,opus','WebM (VP9)','webm'],['video/webm;codecs=vp8,opus','WebM (VP8)','webm']];
+if(window.MediaRecorder){
+  let skip=false;
+  FM.forEach(([m,l,e],i)=>{
+    if(!MediaRecorder.isTypeSupported(m)||(i===1&&skip))return;
+    if(i===0)skip=true;
+    const o=new Option(l,m);o.dataset.ext=e;$('fmt').add(o);
+  });
+  fmtOK=$('fmt').options.length>0;
+}
+if(!fmtOK)$('fmt').add(new Option('Tidak didukung browser ini',''));
+if(window.showDirectoryPicker){
+  $('dir').onclick=async()=>{try{dirH=await showDirectoryPicker({mode:'readwrite'});$('dirn').textContent='Folder: '+dirH.name;}catch(e){}};
+}else{$('dir').hidden=true;$('dirn').textContent='Browser ini menyimpan hasil ke folder Download.';}
+const baseName=()=>(file?file.name.replace(/\.[^.]+$/,''):'video')+'-Subtitled';
+async function save(blob,name){
+  if(dirH){
+    try{const fh=await dirH.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write(blob);await w.close();return toast('Tersimpan di folder '+dirH.name+': '+name);}
+    catch(e){toast('Folder tidak bisa ditulis, file diunduh biasa.');}
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function seekTo(t){return new Promise(r=>{if(Math.abs(vid.currentTime-t)<.01)return r();vid.addEventListener('seeked',r,{once:true});vid.currentTime=t;});}
+$('ocx').onclick=()=>{cancelled=true;vid.pause();if(endRes)endRes();};
+$('exp').onclick=async()=>{
+  if(!cues.length||!fmtOK||exporting)return;
+  const opt=$('fmt').selectedOptions[0],mime=opt.value,ext=opt.dataset.ext;
+  await ensureFont();actx.resume();setSize();
+  vid.pause();await seekTo(0);
+  const stream=new MediaStream([...cv.captureStream(30).getVideoTracks(),...adst.stream.getAudioTracks()]);
+  let rec;
+  try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:clamp(cv.width*cv.height*3,3e6,16e6)});}
+  catch(e){return toast('Browser gagal memulai perekaman dengan format ini. Coba format lain.');}
+  const parts=[];rec.ondataavailable=e=>{if(e.data.size)parts.push(e.data);};
+  const stopped=new Promise(r=>{rec.onstop=r;});
+  exporting=true;cancelled=false;keepAlive(true);startTick();$('opb').style.width='0%';$('ovl').hidden=false;
+  if(!$('hear').checked)asrc.disconnect(actx.destination);
+  try{
+    rec.start(500);
+    await new Promise(res=>{endRes=res;vid.addEventListener('ended',res,{once:true});vid.play().catch(res);});
+    await sleep(350);
+    if(rec.state!=='inactive')rec.stop();
+    await stopped;
+  }finally{
+    exporting=false;endRes=null;stopTick();keepAlive(false);ping('Ekspor selesai');$('ovl').hidden=true;asrc.connect(actx.destination);
+    vid.pause();vid.currentTime=0;
+  }
+  if(cancelled)return toast('Ekspor dibatalkan.');
+  if(!parts.length)return toast('Tidak ada data yang terekam. Coba lagi dengan tab tetap terlihat.');
+  await save(new Blob(parts,{type:mime.split(';')[0]}),baseName()+'.'+ext);
+};
+
+/* ---------- loop gambar ---------- */
+const cueAt=t=>cues.find(c=>(st.snd||!c.snd)&&t>=c.start&&t<c.end);
+const nearest=t=>cues.reduce((b,c)=>{if(c.snd&&!st.snd)return b;const d=Math.min(Math.abs(t-c.start),Math.abs(t-c.end));return !b||d<b.d?{c,d}:b;},null);
+function frame(){
+  if(vid.videoWidth&&vid.readyState>=2){
+    const W=cv.width,H=cv.height,t=vid.currentTime;
+    g.drawImage(vid,0,0,W,H);
+    let cue=null,tt=t,act=-1;
+    if(cues.length){
+      cue=cueAt(t);act=cue?cues.indexOf(cue):-1;
+      if(!cue&&drag&&drag.moved){const n=nearest(t);if(n){cue=n.c;tt=cue.start+(cue.end-cue.start)*.95;}}
+    }else{cue=SAMPLE;tt=(performance.now()/1000)%3.2;}
+    if(cue)drawSub(g,cue,tt,W,H);
+    if(drag&&drag.moved&&pos.x===.5){g.save();g.strokeStyle='#f4c430';g.lineWidth=Math.max(2,W/640);g.setLineDash([W/60,W/80]);g.beginPath();g.moveTo(W/2,0);g.lineTo(W/2,H);g.stroke();g.restore();}
+    if(act!==lastAct){mark(act);lastAct=act;}
+    if(document.activeElement!==$('seek'))$('seek').value=t;
+    $('tc').textContent=fmt(t);
+    if(exporting&&vid.duration)$('opb').style.width=(t/vid.duration*100)+'%';
+  }
+}
+function loop(){frame();requestAnimationFrame(loop);}
+loop();
+</script>
+<script>window.BT_I18N={"dyn":"#toast,#stx,#cnt,#dirn","x":{"Subtitle Maker: subtitle otomatis di browser":"Subtitle Maker: automatic in-browser subtitles","Videomu tetap di perangkatmu. Mode online hanya mengirim suaranya ke Groq":"Your video stays on your device. Online mode only sends its audio to Groq","Taruh videomu di sini":"Drop your video here","Subtitle Maker mendengarkan suara di videomu, menuliskannya jadi subtitle, lalu kamu atur gaya dan posisinya sebelum diekspor.":"Subtitle Maker listens to the audio in your video and writes it out as subtitles, then you adjust the style and position before exporting.","Pilih video":"Choose video","MP4, WebM, atau MOV. Bisa juga diseret ke mana saja di halaman ini.":"MP4, WebM, or MOV. You can also drag it anywhere on this page.","Subtitle otomatis":"Automatic subtitles","Suara di videomu dikenali dan ditulis per kata, lengkap dengan waktunya.":"Speech in your video is recognized and written word by word, with timing.","Atur tampilannya":"Customize the look","Pilih font, warna, animasi sorotan, dan kotak latar. Teks bisa digeser langsung.":"Pick fonts, colors, highlight animations, and background boxes. Text can be dragged directly.","Ekspor atau unduh .srt":"Export or download .srt","Simpan video yang sudah bersubtitle, atau ambil file .srt saja.":"Save the subtitled video, or just grab the .srt file.","Putar":"Play","Jeda":"Pause","Posisi video":"Video position","Seret di dalam video untuk memindahkan teks. Spasi untuk putar atau jeda.":"Drag inside the video to move the text. Press Space to play or pause.","Reset posisi teks":"Reset text position","Ganti video":"Change video","Buat subtitle":"Create subtitles","Mesin":"Engine","Online (Groq, cepat)":"Online (Groq, fast)","Lokal (di browser)":"Local (in browser)","API key Groq":"Groq API key","Gratis di":"Free at",". Disimpan hanya di browser ini.":". Saved only in this browser.","Model Whisper (lokal)":"Whisper model (local)","Tiny (tercepat)":"Tiny (fastest)","Base (seimbang)":"Base (balanced)","Small (paling akurat, unduhan besar)":"Small (most accurate, large download)","Bahasa suara":"Spoken language","Deteksi otomatis":"Auto-detect","Indonesia":"Indonesian","Inggris":"English","Kata per baris":"Words per line","Buat subtitle otomatis":"Generate subtitles automatically","Tampilkan label suara (Musik, Tepuk tangan)":"Show sound labels (Music, Applause)","Unduh .srt":"Download .srt","Gaya dan animasi":"Style and animation","Ukuran teks":"Text size","Warna teks":"Text color","Warna sorotan":"Highlight color","Warna garis tepi":"Outline color","Rata teks":"Text alignment","Tengah":"Center","Kiri":"Left","Kanan":"Right","Tebal garis tepi":"Outline thickness","Bayangan":"Shadow","Jarak huruf":"Letter spacing","Jarak baris":"Line spacing","Lebar maksimal teks":"Max text width","Transparansi teks":"Text opacity","Rotasi teks":"Text rotation","Tebal":"Bold","Miring":"Italic","Huruf besar":"Uppercase","Kotak latar":"Background box","Warna kotak latar":"Box color","Bentuk kotak":"Box shape","Membulat":"Rounded","Tajam":"Sharp","Kapsul":"Pill","Per baris":"Per line","Garis tepi":"Outline","Opasitas kotak latar":"Box opacity","Jarak dalam kotak":"Box padding","Kecepatan animasi":"Animation speed","Animasi teks":"Text animation","Statis":"Static","Memudar":"Fade","Membal":"Bounce","Naik":"Rise","Zoom masuk":"Zoom in","Jatuh":"Drop","Membuka":"Unfold","Mesin ketik":"Typewriter","Kata demi kata":"Word by word","Kata naik":"Word rise","Sorot kata":"Word highlight","Kotak sorot":"Highlight box","Garis bawah":"Underline","Isi warna":"Color fill","Bercahaya":"Glow","Fokus kata":"Word focus","Melompat":"Jump","Gelombang":"Wave","Denyut":"Pulse","Ekspor video":"Export video","Resolusi":"Resolution","Ukuran asli":"Original size","Pilih folder simpan":"Choose save folder","Belum dipilih, hasil diunduh biasa":"Not chosen yet, the file downloads normally","Putar suara saat ekspor (membantu ekspor tetap jalan saat pindah tab)":"Play sound while exporting (helps the export keep running when you switch tabs)","Video direkam real-time selama durasinya. Kamu boleh pindah tab, tapi jangan tutup tab ini. Kalau hasilnya macet, pindahkan tab ini ke jendela sendiri.":"The video is recorded in real time for its full duration. You can switch tabs, but do not close this one. If the result stalls, move this tab into its own window.","Mengekspor video":"Exporting video","Kamu boleh pindah tab, tapi jangan tutup tab ini.":"You can switch tabs, but do not close this tab.","Batalkan":"Cancel","Hapus baris":"Delete line","Tidak didukung browser ini":"Not supported by this browser","Beranda":"Home"},"f":[["Tidak ada data yang terekam. Coba lagi dengan tab tetap terlihat.","No data was recorded. Try again with the tab kept visible."],["Ekspor dibatalkan.","Export cancelled."],["Browser gagal memulai perekaman dengan format ini. Coba format lain.","The browser failed to start recording with this format. Try another format."],[" dari "," of "],["Mengirim bagian ","Sending part "],[" ke Groq"," to Groq"],["Tidak bisa terhubung ke Groq. Periksa koneksi internetmu.","Could not connect to Groq. Check your internet connection."],["API key Groq ditolak. Periksa lagi key-nya.","Groq API key rejected. Check the key again."],["Batas pemakaian Groq tercapai. Tunggu beberapa menit lalu coba lagi.","Groq usage limit reached. Wait a few minutes and try again."],["Groq menolak permintaan (","Groq rejected the request ("],["Gagal membuat subtitle: ","Failed to create subtitles: "],["Gagal membuat subtitle","Failed to create subtitles"],["File itu bukan video. Pilih file MP4, WebM, atau MOV.","That file is not a video. Choose an MP4, WebM, or MOV file."],["Browser tidak bisa memutar video ini. Coba ubah ke MP4 (H.264).","The browser cannot play this video. Try converting it to MP4 (H.264)."],[" baris subtitle. Klik teks di daftar untuk memperbaiki."," subtitle lines. Click a line in the list to fix it."],[" baris"," lines"],["Mengunduh model, ","Downloading model, "],["Menyiapkan model","Preparing model"],["GPU tidak bisa dipakai, beralih ke CPU","GPU unavailable, switching to CPU"],["Mentranskripsi suara","Transcribing audio"],[" memakai GPU"," using GPU"],["Mesin Whisper gagal dimuat. Pastikan internet aktif saat pertama kali, lalu coba lagi.","The Whisper engine failed to load. Make sure you are online the first time, then try again."],["Subtitle selesai","Subtitles done"],["Tidak ada ucapan atau suara yang terdeteksi di video ini.","No speech or sound was detected in this video."],["Selesai: ","Done: "],["Isi API key Groq dulu. Daftarnya gratis di console.groq.com.","Enter your Groq API key first. Signing up is free at console.groq.com."],["Membaca audio dari video","Reading audio from video"],["Audio tidak terbaca. Pastikan videonya punya suara dan formatnya didukung browser.","The audio could not be read. Make sure the video has sound and a browser-supported format."],["Browser ini menyimpan hasil ke folder Download.","This browser saves the result to the Downloads folder."],["Tersimpan di folder ","Saved to folder "],["Folder tidak bisa ditulis, file diunduh biasa.","The folder is not writable, so the file was downloaded normally."],["Ekspor selesai","Export finished"]]};</script>
+<script>
+(function(){
+var D=window.BT_I18N,B=window.BT,SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,INPUT:1},ATTR=['placeholder','title','aria-label','alt'],tm=new WeakMap(),am=new WeakMap();
+var fr=D.f.slice().sort(function(a,b){return b[0].length-a[0].length}),fm={};
+fr.forEach(function(p){fm[p[0]]=p[1]});
+var fre=fr.length?new RegExp(fr.map(function(p){return p[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('|'),'g'):null;
+function tx(s,dyn){var m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2].replace(/\s+/g,' ');if(!c)return s;var e=D.x[c];if(e!==undefined)return m[1]+e+m[3];if(dyn&&fre)return m[1]+m[2].replace(fre,function(k){return fm[k]})+m[3];return s}
+function isDyn(e){return !!(e&&D.dyn&&e.closest&&e.closest(D.dyn))}
+function proc(n){
+ if(n.nodeType===3){var p=n.parentNode;if(!p||SKIP[p.nodeName])return;var r=tm.get(n),cur=n.nodeValue,src=(r&&cur===r.o)?r.s:cur,out=B.lang==='en'?tx(src,isDyn(p)):src;if(out!==cur)n.nodeValue=out;if(out!==src)tm.set(n,{s:src,o:out});else tm.delete(n);}
+ else if(n.nodeType===1){var st=am.get(n)||{};ATTR.forEach(function(a){if(!n.hasAttribute(a))return;var r=st[a],cur=n.getAttribute(a),src=(r&&cur===r.o)?r.s:cur,out=B.lang==='en'?tx(src,false):src;if(out!==cur)n.setAttribute(a,out);if(out!==src)st[a]={s:src,o:out};else delete st[a]});am.set(n,st)}
+}
+function walk(root){if(!root)return;var w=document.createTreeWalker(root,5),n=root;do{proc(n)}while((n=w.nextNode()))}
+var T0=document.title;
+function title(){document.title=B.lang==='en'?(D.x[T0]||T0):T0}
+function links(){var h=document.querySelector('a.home');if(h)h.href='index.html?lang='+B.lang+'&theme='+B.theme}
+function apply(){var d=document.documentElement;d.lang=B.lang;d.setAttribute('data-theme',B.theme);title();walk(document.documentElement);links()}
+new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='childList')m.addedNodes.forEach(function(x){walk(x)});else proc(m.target)})}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
+window.addEventListener('storage',function(e){if(e.key==='bt_lang'||e.key==='bt_theme'){B.lang=e.newValue&&e.key==='bt_lang'?(e.newValue==='en'?'en':'id'):B.lang;if(e.key==='bt_theme')B.theme=e.newValue==='light'?'light':'dark';apply()}});
+apply();
+})();
+</script>
+</body>
+</html>

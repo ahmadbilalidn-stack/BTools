@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upscaler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="Favicon.png">
+<style>
+:root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.45 'Instrument Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--ln)}
+.logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.tag{color:var(--mu);font-size:12px}
+.drop{min-height:calc(100vh - 54px);display:grid;place-items:center;align-content:center;gap:28px;padding:24px}
+.dz{display:block;width:min(720px,100%);padding:72px 32px;border:2px dashed #3c4756;border-radius:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dz.over,.dz:hover{border-color:var(--ac);background:#1a2028}
+.dz h1{font:800 clamp(30px,5.5vw,52px)/1.02 'Bricolage Grotesque',sans-serif;margin:0 0 14px;letter-spacing:-.03em}
+.dz p{color:var(--mu);margin:0 auto 28px;max-width:46ch}
+.ico{width:64px;height:64px;color:var(--ac);margin-bottom:18px}
+.fmts{display:block;margin-top:16px;color:var(--mu);font-size:12px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(720px,100%)}
+.how div{padding:14px 16px;border:1px solid var(--ln);border-radius:10px;background:var(--pn)}
+.how b{display:block;font-weight:600;margin-bottom:3px}
+.how span{color:var(--mu);font-size:12px}
+.ws{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:calc(100vh - 54px)}
+.stage{padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.cvwrap{flex:1;min-height:200px;display:grid;place-items:center;background:#000;border:1px solid var(--ln);border-radius:8px;overflow:hidden;padding:8px}
+.cmp{position:relative;--p:50%;--ar:1.5;width:min(100%,calc((100vh - 200px)*var(--ar)));aspect-ratio:var(--ar);overflow:hidden;background:#111;touch-action:none;user-select:none;-webkit-user-select:none}
+.cmp.done{cursor:ew-resize}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none}
+#bef{clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+.cmp:not(.done) #bef,.cmp:not(.done) .hd,.cmp:not(.done) .tg{display:none}
+.tg{position:absolute;top:10px;padding:3px 9px;border-radius:99px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;font-weight:600;pointer-events:none}
+.tg.b{left:10px}.tg.a{right:10px;background:var(--ac);color:var(--ai)}
+.hd{position:absolute;top:0;bottom:0;left:var(--p);width:3px;margin-left:-1.5px;background:var(--ac);outline-offset:3px}
+.hd i{position:absolute;top:50%;left:50%;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:var(--ac);color:var(--ai);display:grid;place-items:center;font:700 13px 'Instrument Sans',sans-serif;font-style:normal;box-shadow:0 0 0 3px rgba(0,0,0,.35)}
+.hint{display:flex;gap:16px;align-items:center;color:var(--mu);font-size:12px;flex-wrap:wrap}
+.lnk{background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit;padding:0}
+.lnk:disabled{opacity:.4;cursor:not-allowed}
+.btn{font:600 13px 'Instrument Sans',sans-serif;border:1px solid #435063;background:#252d38;color:var(--ink);padding:9px 14px;border-radius:6px;cursor:pointer}
+.btn:hover:not(:disabled){border-color:var(--ac)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.wide{width:100%}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.side{border-left:1px solid var(--ln);background:var(--pn);overflow:auto;padding:4px 18px 24px}
+.side section{padding:16px 0;border-bottom:1px solid var(--ln);display:flex;flex-direction:column;gap:10px}
+h2{margin:0;font:600 15px 'Instrument Sans',sans-serif;display:flex;align-items:center;gap:8px}
+h2 i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--ac);color:var(--ai);display:grid;place-items:center;font-size:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu)}
+select,input[type=password],input[type=number]{background:#12161c;color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px;font:inherit;width:100%}
+input[type=range]{accent-color:var(--ac)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lbl{font-size:12px;color:var(--mu)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:600 12px 'Instrument Sans',sans-serif;padding:6px 14px;border-radius:99px;border:1px solid #435063;background:transparent;color:var(--ink);cursor:pointer}
+.chips button.on{background:var(--ac);border-color:var(--ac);color:var(--ai)}
+.stat{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mu)}
+.pbar{height:4px;background:#2b3440;border-radius:2px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--ac);width:0}
+.pbar i.ind{width:35%;animation:sl 1.1s ease-in-out infinite alternate}
+@keyframes sl{to{transform:translateX(185%)}}
+@media (prefers-reduced-motion:reduce){.pbar i.ind{animation:none;width:100%}}
+.note{color:var(--mu);font-size:12px;margin:0}
+.note a{color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#161b22;padding:9px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;max-width:90vw}
+#toast.on{opacity:1}
+@media (max-width:900px){.ws{grid-template-columns:1fr;height:auto}.side{border-left:0;border-top:1px solid var(--ln)}.tag{display:none}.how{grid-template-columns:1fr}.cmp{width:min(100%,calc(60vh*var(--ar)))}}
+
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.home{display:inline-grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--ln);border-radius:8px;color:var(--ink);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+.home:hover{border-color:var(--ac);color:var(--ac)}
+.home svg{width:18px;height:18px}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb,#3c4756);border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--ac);border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:active{background:#d9ab22;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+textarea::-webkit-scrollbar-track{background:var(--in,#12161c);border-radius:0 6px 6px 0}
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin;scrollbar-color:var(--sb,#566376) transparent}}
+html[data-theme=light]{color-scheme:light;--bg:#f6f3ec;--pn:#ffffff;--ln:#ddd6c6;--ink:#1d232c;--mu:#5f6a77;--in:#faf8f3;--sb:#c4bcaa}
+html[data-theme=light] .btn:not(.pri){background:#ece7da;border-color:#cfc7b4}
+html[data-theme=light] .chips button:not(.on),html[data-theme=light] .chip:not(.on){border-color:#cfc7b4}
+html[data-theme=light] select,html[data-theme=light] input[type=password],html[data-theme=light] input[type=number],html[data-theme=light] input[type=text],html[data-theme=light] input[type=color],html[data-theme=light] textarea{background:var(--in)}
+html[data-theme=light] .dz{border-color:#bfb7a3}
+html[data-theme=light] .dz.over,html[data-theme=light] .dz:hover{background:#efeadd}
+html[data-theme=light] .dz h1{text-shadow:none}
+html[data-theme=light] .pbar{background:#e2dccd}
+html[data-theme=light] .cue.on{background:#fbf1c9;outline-color:#d9b84a}
+html[data-theme=light] .cue input:focus{background:var(--in)}
+html[data-theme=light] #toast{color:#f6f3ec}
+</style>
+<script>(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();</script>
+</head>
+<body>
+<header class="top"><div class="brand"><a class="home" href="index.html" title="Beranda" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h4.5v-5.5h4v5.5h4.5V10"/></svg></a><div class="logo">Upscaler</div></div><span class="tag">Gambarmu diproses di perangkatmu. Mode API mengirim gambar ke Stability AI</span></header>
+<main>
+<section id="drop" class="drop">
+  <label class="dz" id="dz" for="pick">
+    <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="8" width="52" height="48" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M6 44l16-16 12 12 8-8 16 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="43" cy="22" r="5" fill="currentColor"/></svg>
+    <h1>Taruh gambarmu di sini</h1>
+    <p>Perbesar gambar ke 2K, 4K, atau 8K dengan AI, lalu geser garis untuk membandingkan sebelum dan sesudahnya.</p>
+    <span class="btn pri">Pilih gambar</span>
+    <span class="fmts">JPG, PNG, atau WebP. Bisa juga diseret ke mana saja di halaman ini.</span>
+  </label>
+  <div class="how">
+    <div><b>Pilih mesin</b><span>AI di browser tanpa API key, atau lewat API Stability AI.</span></div>
+    <div><b>Tentukan resolusi</b><span>2K, 4K, 8K, atau ukuran sendiri.</span></div>
+    <div><b>Bandingkan dan ekspor</b><span>Geser garis, lalu simpan sebagai PNG, JPG, atau WebP.</span></div>
+  </div>
+</section>
+
+<div id="ws" class="ws" hidden>
+  <div class="stage">
+    <div class="cvwrap">
+      <div class="cmp" id="cmp">
+        <img id="aft" alt="Gambar sesudah"><img id="bef" alt="Gambar sebelum">
+        <span class="tg b">Sebelum</span><span class="tg a">Sesudah</span>
+        <div class="hd" id="hd" tabindex="0" role="slider" aria-label="Garis pembanding" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i>&#9664;&#9654;</i></div>
+      </div>
+    </div>
+    <div class="hint"><span id="inf"></span><span id="gh">Seret garis kuning untuk membandingkan.</span><button id="swap" class="lnk">Ganti gambar</button></div>
+  </div>
+
+  <aside class="side">
+    <section>
+      <h2><i>1</i>Pilih mesin</h2>
+      <label>Mesin upscale
+        <select id="eng"><option value="local">AI di browser (Real-ESRGAN, gratis)</option><option value="api">API Stability AI (lebih cepat, berbayar)</option></select>
+      </label>
+      <label id="mdlrow">Model AI
+        <select id="mdl"><option value="fast">Cepat (4,6 MB, kualitas bagus)</option><option value="hq">Kualitas tinggi (64 MB, paling tajam)</option></select>
+      </label>
+      <label id="keyrow">API key Stability AI
+        <input type="password" id="key" placeholder="sk-..." autocomplete="off" spellcheck="false">
+        <span class="note">Ambil di <a href="https://platform.stability.ai/account/keys" target="_blank" rel="noopener">platform.stability.ai</a>. Disimpan hanya di browser ini. Groq tidak punya model upscale gambar, jadi mode API memakai Stability AI.</span>
+      </label>
+      <p class="note" id="engnote">Model Real-ESRGAN diunduh sekali dari Hugging Face. Buka file ini lewat Live Server (localhost) di VS Code supaya model tersimpan dan tidak diunduh ulang. Chrome atau Edge terbaru dengan WebGPU jauh lebih cepat. Tanpa WebGPU, prosesnya memakai CPU dan bisa lama.</p>
+    </section>
+
+    <section>
+      <h2><i>2</i>Resolusi tujuan</h2>
+      <div class="chips" id="chips"><button data-px="2048" data-l="2K">2K</button><button data-px="3840" data-l="4K" class="on">4K</button><button data-px="7680" data-l="8K">8K</button></div>
+      <label>Atau ukuran sendiri (sisi terpanjang, px)<input type="number" id="cu" min="256" max="12000" step="1" placeholder="contoh: 5000"></label>
+      <label>Ketajaman tambahan (biasanya tidak perlu untuk AI)<input type="range" id="sh" min="0" max="100" value="0"></label>
+      <p class="note" id="dims"></p>
+      <button id="go" class="btn pri wide">Mulai upscale</button>
+      <button id="cx" class="btn wide" hidden>Batalkan</button>
+      <div id="stat" class="stat" hidden><span id="stx"></span><div class="pbar"><i id="pb"></i></div></div>
+    </section>
+
+    <section>
+      <h2><i>3</i>Ekspor gambar</h2>
+      <div class="row2">
+        <label>Format<select id="fmt"><option value="image/png">PNG (tanpa kompresi)</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></label>
+        <label id="qrow" hidden>Kualitas<input type="range" id="q" min="50" max="100" value="92"></label>
+      </div>
+      <button id="exp" class="btn pri wide" disabled>Unduh hasil</button>
+      <p class="note">Tampilan perbandingan memakai pratinjau berukuran maksimal 2400 px. File yang diunduh tetap berukuran penuh.</p>
+    </section>
+  </aside>
+</div>
+</main>
+<input type="file" id="pick" accept="image/*" hidden>
+<div id="toast" role="status"></div>
+
+<script>
+const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const HF='https://huggingface.co/jonathanst29/tinier-upscale-models/resolve/main/';
+const MODELS={fast:{u:HF+'realesr-general-x4v3.onnx',mb:4.6,name:'Cepat'},hq:{u:HF+'realesrgan-x4plus.onnx',mb:64,name:'Kualitas tinggi'}};
+const ORT_V='1.20.1',ORT_URLS=['https://cdn.jsdelivr.net/npm/onnxruntime-web@'+ORT_V+'/dist/ort.all.min.js','https://unpkg.com/onnxruntime-web@'+ORT_V+'/dist/ort.all.min.js'];
+const sess={};let gpuUsed=false,cancelled=false;
+let img=null,iw=0,ih=0,url=null,base='gambar',out=null,busy=false,upsc=null,target=3840,label='4K',tmr=0,prevUrl=null,usedAI=false,aiWhy='';
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tmr);tmr=setTimeout(()=>t.classList.remove('on'),4500);}
+function stat(msg,pct){$('stat').hidden=false;$('stx').textContent=msg;const pb=$('pb');if(pct==null){pb.className='ind';pb.style.width='';}else{pb.className='';pb.style.width=clamp(pct,0,100)+'%';}}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Gagal memuat '+src));document.head.append(s);});}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('Gambar tidak terbaca'));i.src=src;});}
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');if(!x||c.width!==w)throw new Error('Perangkat tidak kuat membuat gambar sebesar '+w+'×'+h+'. Pilih resolusi lebih kecil.');return c;}
+function toCanvas(i){const w=i.naturalWidth||i.width,h=i.naturalHeight||i.height,c=mk(w,h);c.getContext('2d').drawImage(i,0,0);return c;}
+function toBlobP(c,type,q){return new Promise(r=>c.toBlob(r,type,q));}
+
+/* ukuran hasil */
+function dims(){
+  if(!img)return null;
+  const sc=target/Math.max(iw,ih);
+  return{w:Math.round(iw*sc),h:Math.round(ih*sc),sc};
+}
+function info(){
+  const t=dims();if(!t)return;
+  $('inf').textContent='Asli: '+iw+'×'+ih+' px';
+  let m='Hasil: '+t.w+'×'+t.h+' px ('+(t.w*t.h/1e6).toFixed(1)+' megapiksel)';
+  if(t.sc<=1)m+='. Tujuan harus lebih besar dari gambar asli.';
+  else if(t.w*t.h>16.7e6)m+='. Ukuran ini besar, sebagian HP mungkin gagal memprosesnya.';
+  $('dims').textContent=m;
+}
+$('chips').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  target=+b.dataset.px;label=b.dataset.l;$('cu').value='';
+  [...$('chips').children].forEach(x=>x.classList.toggle('on',x===b));info();
+};
+$('cu').oninput=()=>{
+  const v=Math.round(+$('cu').value);
+  [...$('chips').children].forEach(x=>x.classList.remove('on'));
+  if(v>=256&&v<=12000){target=v;label=v+'px';info();}
+  else $('dims').textContent='Isi angka antara 256 dan 12000.';
+};
+
+/* ---------- gambar masuk ---------- */
+async function setFile(f){
+  if(busy)return toast('Tunggu proses selesai dulu.');
+  if(!f||!/^image\//.test(f.type))return toast('File itu bukan gambar. Pilih JPG, PNG, atau WebP.');
+  const u=URL.createObjectURL(f);let i;
+  try{i=await loadImg(u);}catch(e){URL.revokeObjectURL(u);return toast('Browser tidak bisa membuka gambar ini. Coba ubah ke JPG atau PNG.');}
+  if(url)URL.revokeObjectURL(url);
+  if(prevUrl){URL.revokeObjectURL(prevUrl);prevUrl=null;}
+  url=u;img=i;iw=i.naturalWidth;ih=i.naturalHeight;base=f.name.replace(/\.[^.]+$/,'')||'gambar';out=null;
+  $('drop').hidden=true;$('ws').hidden=false;$('stat').hidden=true;$('exp').disabled=true;
+  const c=$('cmp');c.classList.remove('done');c.style.setProperty('--ar',iw/ih);
+  $('aft').src=u;$('bef').src=u;setP(50);info();
+}
+$('pick').onchange=e=>{setFile(e.target.files[0]);e.target.value='';};
+$('swap').onclick=()=>$('pick').click();
+document.addEventListener('dragover',e=>{e.preventDefault();$('dz').classList.add('over');});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)$('dz').classList.remove('over');});
+document.addEventListener('drop',e=>{e.preventDefault();$('dz').classList.remove('over');setFile(e.dataTransfer.files[0]);});
+
+/* ---------- slider pembanding ---------- */
+function setP(p){p=clamp(p,0,100);$('cmp').style.setProperty('--p',p+'%');$('hd').setAttribute('aria-valuenow',Math.round(p));}
+let dragging=false;
+function moveTo(e){const r=$('cmp').getBoundingClientRect();setP((e.clientX-r.left)/r.width*100);}
+$('cmp').addEventListener('pointerdown',e=>{if(!$('cmp').classList.contains('done'))return;dragging=true;$('cmp').setPointerCapture(e.pointerId);moveTo(e);});
+$('cmp').addEventListener('pointermove',e=>{if(dragging)moveTo(e);});
+['pointerup','pointercancel'].forEach(n=>$('cmp').addEventListener(n,()=>{dragging=false;}));
+$('hd').addEventListener('keydown',e=>{
+  const v=+$('hd').getAttribute('aria-valuenow');
+  if(e.key==='ArrowLeft'){e.preventDefault();setP(v-3);}
+  if(e.key==='ArrowRight'){e.preventDefault();setP(v+3);}
+});
+
+/* ---------- pengolahan ---------- */
+function resample(src,w,h){
+  let c=src;
+  while(c.width!==w||c.height!==h){
+    const nw=c.width<w?Math.min(w,c.width*2):Math.max(w,Math.ceil(c.width/2));
+    const nh=c.height<h?Math.min(h,c.height*2):Math.max(h,Math.ceil(c.height/2));
+    const n=mk(nw,nh),x=n.getContext('2d');
+    x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(c,0,0,nw,nh);
+    if(c!==src)c.width=c.height=0;
+    c=n;
+  }
+  return c;
+}
+async function sharpen(cv,amt){
+  if(amt<=0)return;
+  const w=cv.width,h=cv.height,c=cv.getContext('2d'),a=amt*.6,B=256;
+  for(let y0=0;y0<h;y0+=B){
+    const ys=Math.max(0,y0-1),ye=Math.min(h,y0+B+1),bh=ye-ys;
+    const src=c.getImageData(0,ys,w,bh),s=src.data,out=c.createImageData(w,bh),o=out.data;
+    o.set(s);
+    for(let y=1;y<bh-1;y++)for(let x=1;x<w-1;x++){
+      const i=(y*w+x)*4;
+      for(let k=0;k<3;k++)o[i+k]=s[i+k]*(1+4*a)-a*(s[i-4+k]+s[i+4+k]+s[i-w*4+k]+s[i+w*4+k]);
+    }
+    const y1=Math.min(h,y0+B);
+    c.putImageData(out,0,ys,0,y0-ys,w,y1-y0);
+    stat('Mempertajam gambar',y1/h*100);
+    await sleep(0);
+  }
+}
+async function loadAny(urls){let e;for(const u of urls){try{await loadScript(u);return;}catch(x){e=x;}}throw e;}
+async function loadOrt(){
+  if(typeof ort==='undefined')await loadAny(ORT_URLS);
+  if(typeof ort==='undefined')throw new Error('ONNX Runtime tidak termuat');
+  ort.env.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@'+ORT_V+'/dist/';
+  ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(4,navigator.hardwareConcurrency||2):1;
+}
+async function fetchModel(m){
+  let cache=null;
+  try{cache=await caches.open('perbesar-models');const hit=await cache.match(m.u);if(hit)return new Uint8Array(await hit.arrayBuffer());}catch(e){cache=null;}
+  stat('Mengunduh model '+m.name+', 0%',0);
+  let r;
+  try{r=await fetch(m.u);}catch(e){throw new Error('Tidak bisa mengunduh model. Periksa internet.');}
+  if(!r.ok)throw new Error('Gagal mengunduh model ('+r.status+')');
+  const total=+r.headers.get('content-length')||m.mb*1048576,rd=r.body.getReader(),parts=[];let got=0;
+  for(;;){
+    if(cancelled)throw new Error('Dibatalkan');
+    const{done,value}=await rd.read();if(done)break;
+    parts.push(value);got+=value.length;
+    stat('Mengunduh model '+m.name+', '+Math.min(100,Math.round(got/total*100))+'%',got/total*100);
+  }
+  const buf=new Uint8Array(got);let o=0;parts.forEach(p=>{buf.set(p,o);o+=p.length;});
+  try{if(cache)await cache.put(m.u,new Response(buf));}catch(e){}
+  return buf;
+}
+async function getSess(m){
+  if(sess[m.u])return sess[m.u];
+  const bytes=await fetchModel(m);
+  stat('Menyiapkan model '+m.name,null);
+  const st={bytes,s:null,gpu:false};
+  if(navigator.gpu){
+    try{st.s=await ort.InferenceSession.create(bytes,{executionProviders:['webgpu','wasm']});st.gpu=true;}catch(e){st.s=null;}
+  }
+  if(!st.s)st.s=await ort.InferenceSession.create(bytes,{executionProviders:['wasm']});
+  return sess[m.u]=st;
+}
+async function runTile(st,tensor){
+  try{return await st.s.run({[st.s.inputNames[0]]:tensor});}
+  catch(e){
+    if(!st.gpu)throw e;
+    st.gpu=false;toast('GPU gagal, beralih ke CPU (lebih lambat).');
+    st.s=await ort.InferenceSession.create(st.bytes,{executionProviders:['wasm']});
+    return await st.s.run({[st.s.inputNames[0]]:tensor});
+  }
+}
+async function esrgan(src,n,m){
+  const st=await getSess(m),S=4,P=16,T=st.gpu?256:128,w=src.width,h=src.height;
+  const out=mk(w*S,h*S),oc=out.getContext('2d'),sc=src.getContext('2d');
+  const nx=Math.ceil(w/T),ny=Math.ceil(h/T),tot=nx*ny,t0=performance.now();let k=0;
+  for(let ty=0;ty<ny;ty++)for(let tx=0;tx<nx;tx++){
+    if(cancelled)throw new Error('Dibatalkan');
+    const x0=tx*T,y0=ty*T,x1=Math.min(w,x0+T),y1=Math.min(h,y0+T);
+    const ax=Math.max(0,x0-P),ay=Math.max(0,y0-P),bx=Math.min(w,x1+P),by=Math.min(h,y1+P),tw=bx-ax,th=by-ay;
+    const d=sc.getImageData(ax,ay,tw,th).data,pl=tw*th,f=new Float32Array(pl*3);
+    for(let i=0;i<pl;i++){f[i]=d[i*4]/255;f[pl+i]=d[i*4+1]/255;f[2*pl+i]=d[i*4+2]/255;}
+    const res=await runTile(st,new ort.Tensor('float32',f,[1,3,th,tw]));
+    const ot=res[st.s.outputNames[0]],o=ot.data,ow=tw*S,opl=ow*th*S;
+    const cx=(x0-ax)*S,cy=(y0-ay)*S,cw=(x1-x0)*S,ch=(y1-y0)*S;
+    const im=oc.createImageData(cw,ch),dd=im.data;
+    for(let y=0;y<ch;y++){let r=(cy+y)*ow+cx,q=y*cw*4;for(let x=0;x<cw;x++,r++,q+=4){dd[q]=o[r]*255;dd[q+1]=o[opl+r]*255;dd[q+2]=o[2*opl+r]*255;dd[q+3]=255;}}
+    oc.putImageData(im,x0*S,y0*S);
+    try{ot.dispose();}catch(e){}
+    k++;
+    const el=(performance.now()-t0)/1000,left=k>1?el/k*(tot-k):0;
+    stat('Tahap AI '+n+': bagian '+k+' dari '+tot+(left>2?', sisa sekitar '+(left>90?Math.round(left/60)+' menit':Math.round(left)+' detik'):''),k/tot*100);
+    await sleep(0);
+  }
+  let dev=null;try{dev=ort.env.webgpu.device;}catch(e){}
+  gpuUsed=!!(st.gpu&&dev);
+  return out;
+}
+function flat(w,h){const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);return c;}
+async function viaBrowser(t){
+  usedAI=false;aiWhy='';cancelled=false;
+  const m=MODELS[$('mdl').value];
+  let cur=null;
+  try{
+    stat('Memuat ONNX Runtime',null);await loadOrt();
+    const k=Math.min(1,Math.sqrt(60e6/16/(iw*ih)));
+    cur=flat(Math.max(1,Math.round(iw*k)),Math.max(1,Math.round(ih*k)));
+    let n=0;
+    while(n<2&&(n===0||cur.width<t.w)&&cur.width*cur.height*16<=60e6){
+      const nx=await esrgan(cur,n+1,m);
+      cur.width=cur.height=0;cur=nx;n++;usedAI=true;
+    }
+  }catch(e){
+    if(cancelled)throw e;
+    aiWhy=e.message||String(e);console.error(e);
+    if(!usedAI&&cur){cur.width=cur.height=0;cur=null;}
+  }
+  return usedAI?cur:toCanvas(img);
+}
+async function viaApi(key){
+  stat('Menyiapkan gambar untuk dikirim',null);
+  const k=Math.min(1,Math.sqrt(1e6/(iw*ih)),1536/Math.max(iw,ih));
+  const w=Math.max(32,Math.floor(iw*k)),h=Math.max(32,Math.floor(ih*k));
+  const c=mk(w,h);c.getContext('2d').drawImage(img,0,0,w,h);
+  const blob=await toBlobP(c,'image/png');
+  const fd=new FormData();fd.append('image',blob,'input.png');fd.append('output_format','png');
+  stat('Menunggu Stability AI memperbesar gambar',null);
+  let r;
+  try{r=await fetch('https://api.stability.ai/v2beta/stable-image/upscale/fast',{method:'POST',headers:{Authorization:'Bearer '+key,Accept:'image/*'},body:fd});}
+  catch(e){throw new Error('Tidak bisa terhubung ke Stability AI. Bisa karena internet, atau browser memblokir panggilan langsung (CORS). Coba mesin AI di browser.');}
+  if(!r.ok){
+    let m='';try{const d=await r.json();m=(d.errors||[d.message||d.name||'']).join(' ');}catch(e){}
+    throw new Error(r.status===401||r.status===403?'API key ditolak. Periksa lagi key-nya.':r.status===402?'Kredit Stability AI habis.':r.status===429?'Batas pemakaian tercapai. Tunggu sebentar lalu coba lagi.':'Stability AI menolak permintaan ('+r.status+'). '+m);
+  }
+  const u=URL.createObjectURL(await r.blob());
+  try{return toCanvas(await loadImg(u));}finally{URL.revokeObjectURL(u);}
+}
+function lock(on){busy=on;['go','eng','exp','swap'].forEach(id=>$(id).disabled=on);if(!on)$('exp').disabled=!out;}
+$('go').onclick=async()=>{
+  if(busy||!img)return;
+  const t=dims();
+  if(t.sc<=1)return toast('Resolusi tujuan harus lebih besar dari gambar asli ('+Math.max(iw,ih)+' px).');
+  const api=$('eng').value==='api',key=$('key').value.trim();
+  if(api&&!key){toast('Isi API key Stability AI dulu.');$('key').focus();return;}
+  lock(true);out=null;$('cmp').classList.remove('done');$('cx').hidden=api;
+  try{
+    let c=api?await viaApi(key):await viaBrowser(t);
+    stat('Menyesuaikan ke '+t.w+'×'+t.h,null);await sleep(30);
+    const r=resample(c,t.w,t.h);
+    if(c!==r&&c!==null)c.width=c.height=0;
+    await sharpen(r,+$('sh').value/100);
+    out=r;
+    stat('Membuat pratinjau',null);await sleep(30);
+    const k=Math.min(1,2400/Math.max(r.width,r.height));
+    const p=k<1?resample(r,Math.round(r.width*k),Math.round(r.height*k)):r;
+    const pb=await toBlobP(p,'image/png');
+    if(p!==r)p.width=p.height=0;
+    if(prevUrl)URL.revokeObjectURL(prevUrl);
+    prevUrl=URL.createObjectURL(pb);$('aft').src=prevUrl;
+    await new Promise(res=>{$('aft').onload=res;$('aft').onerror=res;});
+    setP(50);$('cmp').classList.add('done');
+    const how=api?'Diproses lewat API.':usedAI?'Diproses dengan Real-ESRGAN ('+MODELS[$('mdl').value].name+(gpuUsed?', GPU':', CPU')+').':'AI tidak jalan ('+(aiWhy||'tidak diketahui')+'), jadi dipakai peningkatan biasa.';
+    if(!api&&!usedAI)toast('AI di browser tidak jalan. Lihat keterangan di panel kanan.');
+    stat('Selesai: '+r.width+'×'+r.height+' px. '+how+' Geser garis untuk membandingkan, lalu unduh.',100);
+  }catch(e){out=null;stat(e.message||'Terjadi kesalahan saat memproses gambar.',0);}
+  finally{lock(false);$('cx').hidden=true;}
+};
+$('cx').onclick=()=>{cancelled=true;stat('Membatalkan',null);};
+
+/* ---------- ekspor ---------- */
+$('fmt').onchange=()=>{$('qrow').hidden=$('fmt').value==='image/png';};
+$('exp').onclick=async()=>{
+  if(!out||busy)return;
+  const f=$('fmt').value,q=+$('q').value/100;
+  let c=out;lock(true);
+  try{
+    if(f==='image/jpeg'){c=mk(out.width,out.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(out,0,0);}
+    const b=await toBlobP(c,f,q);
+    if(c!==out)c.width=c.height=0;
+    if(!b)throw new Error('Browser gagal membuat file. Coba format atau resolusi lain.');
+    const ext=b.type==='image/jpeg'?'jpg':b.type.split('/')[1];
+    const name=base+'-'+label+'.'+ext,a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download=name;document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    toast('Diunduh: '+name+' ('+(b.size/1048576).toFixed(1)+' MB)');
+  }catch(e){toast(e.message);}
+  finally{lock(false);}
+};
+
+/* ---------- pengaturan mesin ---------- */
+function syncEngine(){
+  const api=$('eng').value==='api';
+  $('keyrow').hidden=!api;$('engnote').hidden=api;$('mdlrow').hidden=api;
+  try{localStorage.setItem('pb_eng',$('eng').value);}catch(e){}
+}
+try{const e=localStorage.getItem('pb_eng');if(e)$('eng').value=e;$('key').value=localStorage.getItem('pb_key')||'';}catch(e){}
+$('eng').onchange=syncEngine;
+$('key').oninput=()=>{try{localStorage.setItem('pb_key',$('key').value.trim());}catch(e){}};
+try{if(!localStorage.getItem('pb_mdl'))$('mdl').value=navigator.gpu?'hq':'fast';else $('mdl').value=localStorage.getItem('pb_mdl');}catch(e){}
+$('mdl').onchange=()=>{try{localStorage.setItem('pb_mdl',$('mdl').value);}catch(e){}};
+syncEngine();
+</script>
+<script>window.BT_I18N={"dyn":"#toast,#stx,#dims,#inf","x":{"Perbesar: upscaler gambar AI":"Perbesar: AI image upscaler","Gambarmu diproses di perangkatmu. Mode API mengirim gambar ke Stability AI":"Your image is processed on your device. API mode sends the image to Stability AI","Taruh gambarmu di sini":"Drop your image here","Perbesar gambar ke 2K, 4K, atau 8K dengan AI, lalu geser garis untuk membandingkan sebelum dan sesudahnya.":"Upscale images to 2K, 4K, or 8K with AI, then drag the line to compare before and after.","Pilih gambar":"Choose image","JPG, PNG, atau WebP. Bisa juga diseret ke mana saja di halaman ini.":"JPG, PNG, or WebP. You can also drag it anywhere on this page.","Pilih mesin":"Choose engine","AI di browser tanpa API key, atau lewat API Stability AI.":"In-browser AI with no API key, or via the Stability AI API.","Tentukan resolusi":"Set the resolution","2K, 4K, 8K, atau ukuran sendiri.":"2K, 4K, 8K, or a custom size.","Bandingkan dan ekspor":"Compare and export","Geser garis, lalu simpan sebagai PNG, JPG, atau WebP.":"Drag the line, then save as PNG, JPG, or WebP.","Gambar sesudah":"After image","Gambar sebelum":"Before image","Sebelum":"Before","Sesudah":"After","Garis pembanding":"Comparison line","Seret garis kuning untuk membandingkan.":"Drag the yellow line to compare.","Ganti gambar":"Change image","Mesin upscale":"Upscale engine","AI di browser (Real-ESRGAN, gratis)":"In-browser AI (Real-ESRGAN, free)","API Stability AI (lebih cepat, berbayar)":"Stability AI API (faster, paid)","Model AI":"AI model","Cepat (4,6 MB, kualitas bagus)":"Fast (4.6 MB, good quality)","Kualitas tinggi (64 MB, paling tajam)":"High quality (64 MB, sharpest)","API key Stability AI":"Stability AI API key","Ambil di":"Get one at",". Disimpan hanya di browser ini. Groq tidak punya model upscale gambar, jadi mode API memakai Stability AI.":". Saved only in this browser. Groq has no image upscale model, so API mode uses Stability AI.","Model Real-ESRGAN diunduh sekali dari Hugging Face. Buka file ini lewat Live Server (localhost) di VS Code supaya model tersimpan dan tidak diunduh ulang. Chrome atau Edge terbaru dengan WebGPU jauh lebih cepat. Tanpa WebGPU, prosesnya memakai CPU dan bisa lama.":"The Real-ESRGAN model is downloaded once from Hugging Face. Open this file through Live Server (localhost) in VS Code so the model is cached and not downloaded again. The latest Chrome or Edge with WebGPU is much faster. Without WebGPU it runs on the CPU and can take a long time.","Resolusi tujuan":"Target resolution","Atau ukuran sendiri (sisi terpanjang, px)":"Or a custom size (longest side, px)","contoh: 5000":"e.g. 5000","Ketajaman tambahan (biasanya tidak perlu untuk AI)":"Extra sharpening (usually not needed for AI)","Mulai upscale":"Start upscaling","Batalkan":"Cancel","Ekspor gambar":"Export image","PNG (tanpa kompresi)":"PNG (lossless)","Kualitas":"Quality","Unduh hasil":"Download result","Tampilan perbandingan memakai pratinjau berukuran maksimal 2400 px. File yang diunduh tetap berukuran penuh.":"The comparison view uses a preview of up to 2400 px. The downloaded file keeps its full size.","Beranda":"Home"},"f":[["Tidak ada data yang terekam. Coba lagi dengan tab tetap terlihat.","No data was recorded. Try again with the tab kept visible."],["Ekspor dibatalkan.","Export cancelled."],["Browser gagal memulai perekaman dengan format ini. Coba format lain.","The browser failed to start recording with this format. Try another format."],[" dari "," of "],["Asli: ","Original: "],["Hasil: ","Result: "],[" megapiksel)"," megapixels)"],[". Tujuan harus lebih besar dari gambar asli.",". The target must be larger than the original image."],[". Ukuran ini besar, sebagian HP mungkin gagal memprosesnya.",". This size is large; some phones may fail to process it."],["Isi angka antara 256 dan 12000.","Enter a number between 256 and 12000."],["Tunggu proses selesai dulu.","Wait for the current process to finish first."],["File itu bukan gambar. Pilih JPG, PNG, atau WebP.","That file is not an image. Choose JPG, PNG, or WebP."],["Browser tidak bisa membuka gambar ini. Coba ubah ke JPG atau PNG.","The browser cannot open this image. Try converting it to JPG or PNG."],["Gagal memuat ","Failed to load "],["Gambar tidak terbaca","The image could not be read"],["Perangkat tidak kuat membuat gambar sebesar ","This device cannot create an image as large as "],["Mempertajam gambar","Sharpening image"],["ONNX Runtime tidak termuat","ONNX Runtime did not load"],["Mengunduh model ","Downloading model "],["Tidak bisa mengunduh model. Periksa internet.","Could not download the model. Check your internet."],["Gagal mengunduh model (","Failed to download model ("],["Dibatalkan","Cancelled"],["Menyiapkan model ","Preparing model "],["GPU gagal, beralih ke CPU (lebih lambat).","GPU failed, switching to CPU (slower)."],["Tahap AI ","AI pass "],[": bagian ",": part "],[", sisa sekitar ",", about "],[" menit"," min left"],[" detik"," sec left"],["Memuat ONNX Runtime","Loading ONNX Runtime"],["Menyiapkan gambar untuk dikirim","Preparing the image to send"],["Menunggu Stability AI memperbesar gambar","Waiting for Stability AI to upscale the image"],["Tidak bisa terhubung ke Stability AI. Bisa karena internet, atau browser memblokir panggilan langsung (CORS). Coba mesin AI di browser.","Could not connect to Stability AI. It may be your internet, or the browser blocking direct calls (CORS). Try the in-browser AI engine."],["API key ditolak. Periksa lagi key-nya.","API key rejected. Check the key again."],["Kredit Stability AI habis.","Stability AI credits have run out."],["Batas pemakaian tercapai. Tunggu sebentar lalu coba lagi.","Usage limit reached. Wait a moment and try again."],["Stability AI menolak permintaan (","Stability AI rejected the request ("],["Resolusi tujuan harus lebih besar dari gambar asli (","The target resolution must be larger than the original image ("],["Isi API key Stability AI dulu.","Enter your Stability AI API key first."],["Menyesuaikan ke ","Resizing to "],["Membuat pratinjau","Creating preview"],["Diproses lewat API.","Processed via API."],["Diproses dengan Real-ESRGAN (","Processed with Real-ESRGAN ("],["AI tidak jalan (","AI did not run ("],["tidak diketahui","unknown"],["), jadi dipakai peningkatan biasa.","), so a standard upscale was used."],["AI di browser tidak jalan. Lihat keterangan di panel kanan.","The in-browser AI did not run. See the note in the right panel."],["Selesai: ","Done: "],[" Geser garis untuk membandingkan, lalu unduh."," Drag the line to compare, then download."],["Terjadi kesalahan saat memproses gambar.","An error occurred while processing the image."],["Membatalkan","Cancelling"],["Browser gagal membuat file. Coba format atau resolusi lain.","The browser failed to create the file. Try another format or resolution."],["Diunduh: ","Downloaded: "],["Cepat","Fast"],["Kualitas tinggi","High quality"]]};</script>
+<script>
+(function(){
+var D=window.BT_I18N,B=window.BT,SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,INPUT:1},ATTR=['placeholder','title','aria-label','alt'],tm=new WeakMap(),am=new WeakMap();
+var fr=D.f.slice().sort(function(a,b){return b[0].length-a[0].length}),fm={};
+fr.forEach(function(p){fm[p[0]]=p[1]});
+var fre=fr.length?new RegExp(fr.map(function(p){return p[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('|'),'g'):null;
+function tx(s,dyn){var m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2].replace(/\s+/g,' ');if(!c)return s;var e=D.x[c];if(e!==undefined)return m[1]+e+m[3];if(dyn&&fre)return m[1]+m[2].replace(fre,function(k){return fm[k]})+m[3];return s}
+function isDyn(e){return !!(e&&D.dyn&&e.closest&&e.closest(D.dyn))}
+function proc(n){
+ if(n.nodeType===3){var p=n.parentNode;if(!p||SKIP[p.nodeName])return;var r=tm.get(n),cur=n.nodeValue,src=(r&&cur===r.o)?r.s:cur,out=B.lang==='en'?tx(src,isDyn(p)):src;if(out!==cur)n.nodeValue=out;if(out!==src)tm.set(n,{s:src,o:out});else tm.delete(n);}
+ else if(n.nodeType===1){var st=am.get(n)||{};ATTR.forEach(function(a){if(!n.hasAttribute(a))return;var r=st[a],cur=n.getAttribute(a),src=(r&&cur===r.o)?r.s:cur,out=B.lang==='en'?tx(src,false):src;if(out!==cur)n.setAttribute(a,out);if(out!==src)st[a]={s:src,o:out};else delete st[a]});am.set(n,st)}
+}
+function walk(root){if(!root)return;var w=document.createTreeWalker(root,5),n=root;do{proc(n)}while((n=w.nextNode()))}
+var T0=document.title;
+function title(){document.title=B.lang==='en'?(D.x[T0]||T0):T0}
+function links(){var h=document.querySelector('a.home');if(h)h.href='index.html?lang='+B.lang+'&theme='+B.theme}
+function apply(){var d=document.documentElement;d.lang=B.lang;d.setAttribute('data-theme',B.theme);title();walk(document.documentElement);links()}
+new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='childList')m.addedNodes.forEach(function(x){walk(x)});else proc(m.target)})}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
+window.addEventListener('storage',function(e){if(e.key==='bt_lang'||e.key==='bt_theme'){B.lang=e.newValue&&e.key==='bt_lang'?(e.newValue==='en'?'en':'id'):B.lang;if(e.key==='bt_theme')B.theme=e.newValue==='light'?'light':'dark';apply()}});
+apply();
+})();
+</script>
+</body>
+</html>
