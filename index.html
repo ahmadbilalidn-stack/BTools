@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="Favicon.png">
 <script>(function(){var q=new URLSearchParams(location.search),g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},s=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};var l=q.get('lang')||g('bt_lang')||'id',t=q.get('theme')||g('bt_theme')||'dark';l=l==='en'?'en':'id';t=t==='light'?'light':'dark';s('bt_lang',l);s('bt_theme',t);var d=document.documentElement;d.setAttribute('data-theme',t);d.lang=l;window.BT={lang:l,theme:t};})();</script>
 <style>
 :root{--bg:#161b22;--pn:#1d232c;--ln:#2b3440;--ink:#e8e6df;--mu:#8f9aa8;--ac:#f4c430;--ai:#1b1503;--sb:#3c4756;--glow:rgba(244,196,48,.16);--grid:rgba(255,255,255,.035)}
@@ -100,6 +99,9 @@ section.s{max-width:1100px;margin:0 auto;padding:84px 20px 0}
 .go{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--ac)}
 .go svg{width:16px;height:16px;transition:transform .2s}
 .card:hover .go svg{transform:translateX(5px)}
+#cards{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){#cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#cards{grid-template-columns:1fr}}
 .feat{padding:22px;border-left:2px solid var(--ac);background:linear-gradient(90deg,var(--glow),transparent 60%)}
 .feat h3{margin:0 0 6px;font:800 19px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
 .feat p{margin:0;color:var(--mu);font-size:14px}
@@ -144,7 +146,7 @@ footer{margin-top:90px;padding:26px 20px;border-top:1px solid var(--ln);display:
 </section>
 
 <div class="stats rv">
-  <div class="stat"><b>4</b><span data-i18n="st1">tools siap pakai</span></div>
+  <div class="stat"><b>6</b><span data-i18n="st1">tools siap pakai</span></div>
   <div class="stat"><b>Rp0</b><span data-i18n="st2">gratis selamanya</span></div>
   <div class="stat"><b>0</b><span data-i18n="st3">akun yang dibutuhkan</span></div>
   <div class="stat"><b>100%</b><span data-i18n="st4">diproses di browser</span></div>
@@ -179,6 +181,18 @@ footer{margin-top:90px;padding:26px 20px;border-top:1px solid var(--ln);display:
       <div class="tags"><span>RNNoise</span><span>.wav</span><span data-i18n="tagv">Video bersih</span></div>
       <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
+    <a class="card rv" href="MP4_Converter.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4-2.5z"/><path d="M7 3v2M17 3v2" /></svg></div>
+      <h3>MP4 Converter</h3><p data-i18n="d5">.</p>
+      <div class="tags"><span>MP4</span><span>Video</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card rv" href="Music_Separator.html" data-tool>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div>
+      <h3>Music Separator</h3><p data-i18n="d6">.</p>
+      <div class="tags"><span data-i18n="tvoc">Vokal</span><span data-i18n="tinst">Instrumen</span><span>Audio</span></div>
+      <span class="go"><span data-i18n="open">Buka tools</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
   </div>
 </section>
 
@@ -208,7 +222,7 @@ d1:'Bikin subtitle otomatis dari suara videomu, atur gaya dan animasinya, lalu e
 d2:'Ubah teks jadi animasi keren: highlight, kutipan, efek kamera, lalu ekspor ke MP4 atau WebM transparan.',
 d3:'Perbesar gambar ke 2K, 4K, atau 8K dengan AI, lalu geser garis untuk membandingkan sebelum dan sesudah.',
 d4:'Hapus dengung, desis, dan bising latar dari audio atau video memakai AI, lalu bandingkan hasilnya.',
-tagv:'Video bersih',open:'Buka tools',eb2:'Kenapa BTools',w_h:'Sederhana, privat, dan gratis',w_p:'Tidak ada langganan, tidak ada watermark, tidak ada akun. Buka, pakai, selesai.',
+tagv:'Video bersih',d5:'Ubah video ke format MP4 supaya bisa diputar di hampir semua perangkat dan platform.',d6:'Pisahkan vokal dan instrumen dari sebuah lagu dengan AI, lalu simpan hasilnya.',tvoc:'Vokal',tinst:'Instrumen',open:'Buka tools',eb2:'Kenapa BTools',w_h:'Sederhana, privat, dan gratis',w_p:'Tidak ada langganan, tidak ada watermark, tidak ada akun. Buka, pakai, selesai.',
 f1h:'Gratis tanpa syarat',f1p:'Semua tools bisa dipakai tanpa biaya dan tanpa batas harian dari kami.',
 f2h:'File tetap di perangkatmu',f2p:'Video, gambar, dan audio diproses di browser. Hanya mode online opsional yang mengirim data ke layanan pihak ketiga.',
 f3h:'Tanpa instal, tanpa daftar',f3p:'Cukup buka halamannya di Chrome, Edge, atau Firefox terbaru dan langsung mulai.',
@@ -222,7 +236,7 @@ d1:"Automatically create subtitles from your video's audio, style and animate th
 d2:'Turn text into slick animations: highlights, quotes, camera effects, then export to MP4 or transparent WebM.',
 d3:'Upscale images to 2K, 4K, or 8K with AI, then drag the line to compare before and after.',
 d4:'Remove hum, hiss, and background noise from audio or video using AI, then compare the result.',
-tagv:'Clean video',open:'Open tool',eb2:'Why BTools',w_h:'Simple, private, and free',w_p:'No subscriptions, no watermarks, no accounts. Open it, use it, done.',
+tagv:'Clean video',d5:'Convert video to MP4 so it plays on almost every device and platform.',d6:'Separate vocals and instruments from a song with AI, then save the result.',tvoc:'Vocals',tinst:'Instruments',open:'Open tool',eb2:'Why BTools',w_h:'Simple, private, and free',w_p:'No subscriptions, no watermarks, no accounts. Open it, use it, done.',
 f1h:'Free, no strings attached',f1p:'Every tool is free to use, with no daily limits from us.',
 f2h:'Files stay on your device',f2p:'Videos, images, and audio are processed in your browser. Only the optional online modes send data to a third-party service.',
 f3h:'No install, no sign-up',f3p:'Just open the page in the latest Chrome, Edge, or Firefox and get started.',
